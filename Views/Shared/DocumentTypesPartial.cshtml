@@ -1,0 +1,251 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function DocumentTypegriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#DocumentTypegrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function DocumentTypegridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#DocumentTypegrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onDocumentTypegridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.DocumentTypeID;
+          $("#DocumentTypeID").val(id);
+        }
+    }
+
+
+
+
+    function FunDocumentTypeID() {
+        var _selId = $("#DocumentTypeID").val();
+        return {
+            documenttypeid: _selId
+        };
+    }
+
+    function SetDocumentTypegrid_edit(arg) {
+        if (arg === true) {
+            $("#DocumentTypegrid_edit_button").hide();
+            $("#DocumentTypegrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#DocumentTypegrid_add_button").hide();
+            $("#DocumentTypegrid_cancel_button").show();
+            $("#DocumentTypegrid_update_button").show();
+        }
+        else {
+            $("#DocumentTypegrid_edit_button").show();
+            $("#DocumentTypegrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#DocumentTypegrid_add_button").show();
+            $("#DocumentTypegrid_cancel_button").hide();
+            $("#DocumentTypegrid_update_button").hide();
+        }
+    }
+
+    function AddDocumentTypegridrow() {
+        $("#DocumentTypeID").val('');
+        grid = $("#DocumentTypegrid").data("kendoGrid");
+        grid.addRow();
+        SetDocumentTypegrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#DocumentTypegrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#DocumentTypegrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetDocumentTypegrid_edit(true);
+            }
+        });
+
+        $("#DocumentTypegrid_add_button").on("click", function () {
+            AddDocumentTypegridrow();
+        });
+
+        $("#DocumentTypegrid_delete_button").on("click", function () {
+            grid = $("#DocumentTypegrid").data("kendoGrid");
+            var sel = $("#DocumentTypegrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetDocumentTypegrid_edit(false);
+        });
+
+        $("#DocumentTypegrid_update_button").on("click", function () {
+            debugger;
+            $("#DocumentTypegrid").data("kendoGrid").saveChanges();
+            SetDocumentTypegrid_edit(false);
+        });
+
+        $("#DocumentTypegrid_cancel_button").on("click", function () {
+            $("#DocumentTypegrid").data("kendoGrid").cancelChanges();
+            SetDocumentTypegrid_edit(false);
+        });
+        SetDocumentTypegrid_edit(false);
+
+        $("#DocumentTypegrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="DocumentTypeID" id="DocumentTypeID" />
+<div>
+        @{
+            int DocumentTypePermission = (int)ViewData["DocumentTypePermission"];
+        }
+        @(Html.Kendo().Grid<DocumentTypeModel>()
+                        .Name("DocumentTypegrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (DocumentTypePermission >2){           
+                                                     <div id="DocumentTypegrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (DocumentTypePermission >3){
+                                                    <div id="DocumentTypegrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (DocumentTypePermission ==5){
+                                                    <div id="DocumentTypegrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="DocumentTypegrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="DocumentTypegrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.DocumentTypeName);
+				                  columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+				                  columns.Bound(p => p.CreateDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangeDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangedByFullName);
+                          columns.Bound(p => p.DocumentTypeID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onDocumentTypegridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("DocumentTypegriderror_error")
+                            .RequestEnd("DocumentTypegridrequest_end")
+                        )
+                        .Read(ac => ac.Action("DocumentTypes_Read", "DocumentTypes"))
+                        .Create(ac => ac.Action("DocumentTypes_Create", "DocumentTypes"))
+                        .Update(ac => ac.Action("DocumentTypes_Update", "DocumentTypes"))
+                        .Destroy(ac => ac.Action("DocumentTypes_Destroy", "DocumentTypes"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.DocumentTypeID); model.Field(p => p.DocumentTypeID).Editable(false);
+				model.Field(p => p.DocumentTypeName);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy).Editable(false);
+				model.Field(p => p.ChangedByFullName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#DocumentTypegrid")
+    .Filter("td:nth-child(6)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

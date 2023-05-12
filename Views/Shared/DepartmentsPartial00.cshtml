@@ -1,0 +1,314 @@
+﻿@using SAMS.Model
+
+@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/SamsStyles.css")" rel="stylesheet" type="text/css" />
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script src="~/Static/v1/js/jquery.validate.min.js"></script>
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+
+<script src="~/Static/v1/js/sweetalert2.min.js"></script>
+<style>
+    .has-error  {
+        border: 2px solid #cd0909 !important;
+    }
+
+    .has-error .error {
+        margin: 0 !important;
+        margin-top: 4px !important;
+        background: #ff000054 !important;
+        color: white !important;
+        padding: 2px 7px !important;
+        font-size: 13px !important;
+    }
+</style>
+
+<script type="text/javascript">
+    var postUrl = '@Url.Action("Departments_Update", "Departments")';
+    function ongridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        var id = dataItem.DepartmentID;
+
+        $("#editForm").load('@(Url.Action("GetDepartmentReadForm", "Departments", null, Request.Url.Scheme))?id=' + id, function () {
+            console.log('get partial');
+        });
+    }
+
+    function charcatgrid_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+
+
+    function Addcharcat() {
+
+        $("#editForm").load('@(Url.Action("GetDepartmentNewForm", "Departments", null, Request.Url.Scheme))', function () {
+            Setcharcat_edit(true);
+        });
+    }
+
+    function Setcharcat_edit(arg) {
+
+        if (arg === true) {
+            $("#charcat_edit_button").hide();
+            $("#charcat_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#charcat_add_button").hide();
+            $("#charcat_cancel").show();
+            $("#charcat_update").show();
+            $(".k-grid-content", $("#grid")).addClass("k-state-disabled");
+
+        }
+        else {
+            $("#charcat_edit_button").show();
+            $("#charcat_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#charcat_add_button").show();
+            $("#charcat_cancel").hide();
+            $("#charcat_update").hide();
+            $(".k-grid-content", $("#grid")).removeClass("k-state-disabled");
+        }
+    }
+
+    $(document).ready(function () {
+
+
+        $("#charcat_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#grid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                var dataItem = grid.dataItem(selectedrow);
+                var id = dataItem.DepartmentID;
+                $("#editForm").load('@(Url.Action("GetDepartmentEditForm", "Departments", null, Request.Url.Scheme))?id=' + id, function () {
+                    Setcharcat_edit(true);
+                });
+
+            }
+        });
+
+        $("#charcat_add_button").on("click", function () {
+            Addcharcat();
+        })
+
+        $("#charcat_delete_button").on("click", function () {
+            grid = $("#grid").data("kendoGrid");
+            var sel = $("#grid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            Setcharcat_edit(false);
+        })
+
+        $("#charcat_update").on("click", function (e) {
+            //e.preventDefault();
+
+            var validator = $("#modForm").validate({
+                highlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().addClass('has-error');
+                    }
+                    else {
+                        $(element).parent().addClass('has-error');
+                    }
+                },
+                unhighlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().removeClass('has-error');
+                    }
+                    else {
+                        $(element).parent().removeClass('has-error');
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    if (element[0].type == 'select' || element[0].type == 'select-one') {
+                        error.appendTo(element.parent().parent('div'));
+                    }
+                    else {
+                        error.appendTo(element.parent('div'));
+                    }
+                },
+                rules: {
+                    DepartmentName: {
+                        required: true
+                    },
+                    OrganizationID: {
+                        required: true
+                    },
+                    LocationID: {
+                        required: true
+                    }
+                },
+                messages: {
+                    DepartmentName: {
+                        required: "DepartmentName vacib xanadır zəhmət olmasa doldurun !"
+                    },
+                    OrganizationID: {
+                        required: "OrganizationID vacib xanadır zəhmət olmasa doldurun!"
+                    },
+                    LocationID: {
+                        required: "LocationID vacib xanadır zəhmət olmasa doldurun!"
+                    }
+
+                },
+                submitHandler: function (form) {
+                    var data = $('#modForm').serialize();
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: postUrl,
+                        data: data,
+                        beforeSend: function () {
+
+                        },
+                        success: function (res) {
+                            if (res.Errors) {
+                                Swal.fire({ icon: 'error', text: res.Errors.exception.errors, showConfirmButton: true })
+                            }
+                            else {
+                                Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 })
+                                $("#grid").data("kendoGrid").dataSource.read();
+                                Setcharcat_edit(false);
+                            }
+                        },
+                        error: function (error) {
+                            $('#monitorForm').find("input, select, textarea, button").prop("disabled", false);
+                            Swal.fire({ type: 'error', text: "Xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.", showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false })
+                        }
+                    });
+                }
+            });
+            $("#modForm").submit();
+        });
+
+
+
+        $("#charcat_cancel").on("click", function () {
+            $("#grid").data("kendoGrid").cancelChanges();
+            Setcharcat_edit(false);
+        })
+        Setcharcat_edit(false);
+    });
+
+
+</script>
+
+<body style="background-color: #00B9CE; ">
+    <input type="hidden" name="cat_id" id="cat_id" />
+    <table>
+        <tr>
+            <td style="width: 60%">
+                <div>
+
+
+                    @(Html.Kendo().Grid<DepartmentModel>()
+                        .Name("grid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                     <div id="charcat_add_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+
+                                                    <div id="charcat_edit_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_update" class="k-button-icontext k-grid-update circleButton" type="submit">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_cancel" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+
+
+                            columns.Bound(p => p.DepartmentName);
+                            columns.Bound(p => p.Organization).EditorTemplateName("OrganizationsList").Width(120);
+
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp))
+                        .Groupable()
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Pageable(pager => pager.AlwaysVisible(true).PageSizes(new List<object> { 5, 10, 20, "all" }))
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("ongridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .Read(ac => ac.Action("Departments_Read", "Departments"))
+                        .Create(ac => ac.Action("Departments_Create", "Departments"))
+                        .Update(ac => ac.Action("Departments_Update", "Departments"))
+                        .Destroy(ac => ac.Action("Departments_Destroy", "Departments"))
+                        .Model(model =>
+                        {
+
+                            model.Id(p => p.DepartmentID);
+                            model.Field(p => p.DepartmentName);
+                            model.Field(p => p.Organization).DefaultValue(ViewData["organizationslist"] as SAMS.Model.OrganizationModel);
+                        })
+                        )
+                        )
+                </div>
+            </td>
+            <td style="width: 40%">
+                <div id="editForm" style="overflow-y: scroll; height: 800px">
+                    @{Html.RenderPartial("DepartmentReadFormPartial");}
+                </div>
+
+            </td>
+        </tr>
+    </table>
+</body>
+

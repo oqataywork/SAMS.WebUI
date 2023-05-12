@@ -1,0 +1,261 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function griderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function gridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors == null) || (e.type == "update" && e.response.Errors == null)) {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#grid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+    function ongridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if (dataItem) {
+            var id = dataItem.UserID;
+            $("#UserID").val(id);
+        }
+    }
+
+    function ongridSave(e) {
+        alert(e);
+    }
+
+
+
+    function FunUserID() {
+        var _selId = $("#UserID").val();
+        return {
+            userid: _selId
+        };
+    }
+
+    function Setgrid_edit(arg) {
+        if (arg === true) {
+            $("#grid_edit_button").hide();
+            $("#grid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#grid_add_button").hide();
+            $("#grid_cancel_button").show();
+            $("#grid_update_button").show();
+        }
+        else {
+            $("#grid_edit_button").show();
+            $("#grid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#grid_add_button").show();
+            $("#grid_cancel_button").hide();
+            $("#grid_update_button").hide();
+        }
+    }
+
+    function Addgridrow() {
+        $("#UserID").val('');
+        grid = $("#grid").data("kendoGrid");
+        grid.addRow();
+        Setgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#grid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#grid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                Setgrid_edit(true);
+            }
+        });
+
+        $("#grid_add_button").on("click", function () {
+            Addgridrow();
+        });
+
+        $("#grid_delete_button").on("click", function () {
+            grid = $("#grid").data("kendoGrid");
+            var sel = $("#grid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            Setgrid_edit(false);
+        });
+
+        $("#grid_update_button").on("click", function () {
+            debugger;
+            $("#grid").data("kendoGrid").saveChanges();
+            Setgrid_edit(false);
+        });
+
+        $("#grid_cancel_button").on("click", function () {
+            $("#grid").data("kendoGrid").cancelChanges();
+            Setgrid_edit(false);
+        });
+        Setgrid_edit(false);
+
+        $("#grid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="UserID" id="UserID" />
+
+    <div>
+        @{
+            int UserPermission = (int)ViewData["UserPermission"];
+        }
+
+        @(Html.Kendo().Grid<UserModel>()
+                                .Name("grid")
+                                  .ToolBar(toolbar =>
+                                  {
+                                  toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (UserPermission > 2) {
+                                                     <div id="grid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (UserPermission > 3) {
+                                                    <div id="grid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (UserPermission == 5) {
+                                                    <div id="grid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="grid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="grid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                                  })
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(p => p.PersonGuid).ClientTemplate("#:UserFullName#").EditorTemplateName("NotRegisteredUsersList").Title("Personel");
+                                    //columns.Bound(p => p.UserID).ClientTemplate("#:UserFullName#").EditorTemplateName("NotRegisteredUsersList");
+                                    columns.Bound(p => p.UserLogin);
+                                    //columns.Bound(p => p.Password).ClientTemplate("<span>#: Password == null ? ' ' : '●'.repeat(Password.length) #</span>").EditorTemplateName("<input type= 'password'  />");
+                                    columns.Bound(p => p.Password).ClientTemplate("<span>●●●●●●●●</span>").EditorTemplateName("<input type= 'password'  />");
+                                    columns.Bound(p => p.RoleID).ClientTemplate("#:RoleName#");
+                                    columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+                                    columns.Bound(p => p.UserID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Groupable()
+                                .Resizable(resize => resize.Columns(true))
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Navigatable()
+                                .Filterable()
+                                .Scrollable(scr => scr.Height(600))
+                                .Events(ev => ev
+                                    .Change("ongridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("griderror_error")
+                            .RequestEnd("gridrequest_end")
+                        )
+                        .Read(ac => ac.Action("Users_Read", "Users"))
+                        .Create(ac => ac.Action("RegisterUser", "Users"))
+                        .Update(ac => ac.Action("Users_Update", "Users"))
+                        .Destroy(ac => ac.Action("Users_Destroy", "Users"))
+                        .Model(model =>
+                        {
+
+                            model.Id(p => p.UserID);
+                            model.Field(p => p.UserID).Editable(false);
+                            model.Field(p => p.UserLogin);
+                            model.Field(p => p.RoleID);
+                            model.Field(p => p.Deactivate);
+                            model.Field(p => p.CreateDate).Editable(false);
+                            model.Field(p => p.ChangeDate).Editable(false);
+                            model.Field(p => p.ChangedBy).Editable(false);
+                            model.Field(p => p.ChangedByFullName).Editable(false);
+                            model.Field(p => p.UserFullName).Editable(false);
+                            model.Field(p => p.RoleName);
+                        })
+                        )
+                        )
+        @(Html.Kendo().Tooltip()
+    .For("#grid")
+    .Filter("td:nth-child(6)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

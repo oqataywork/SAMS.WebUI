@@ -1,0 +1,57 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new {id= "dropdownAtributeCateries", @class = "dropdownAtributeCateries" })
+                .Filter("contains")
+                //.Name("dropdownAtributeCateries")
+                .DataValueField("AssetAttributeCategoryID")
+                .DataTextField("AssetAttributeCategoryName")
+                .DataSource(ds => ds.Read(a => a.Action("AttributeCategoriesList", "AssetAttributeCategories"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="asset_attributecateg_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="addattributecategwindow"></div>
+<script>
+
+    var window = $("#addattributecategwindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            
+            //var wnd = $("#addattributewindow").data("kendoWindow");
+            //// !wnd.element.is(":hidden")
+            //if (!wnd) //returns true or false
+            //{
+                var dropdownAtributes = $("#dropdownAtributeCateries").data("kendoDropDownList");
+                dropdownAtributes.dataSource.read();
+            //}
+        },
+        height: "600px",
+        modal: true,
+        title: "Atttribute Categories",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#asset_attributecateg_add_button").on("click", function () {
+        var dialog = $("#addattributecategwindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'AssetAttributeCategoriesPartial' }
+        });
+        dialog.center().open();
+    })
+</script>

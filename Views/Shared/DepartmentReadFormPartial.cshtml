@@ -1,0 +1,146 @@
+﻿@using SAMS.Model;
+
+@model DepartmentModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+
+</style>
+
+<div>
+
+    @using (Html.BeginForm("Departments_Create_or_Update", "Departments", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+    <fieldset>
+        <div hidden="hidden">
+            @Html.TextBoxFor(model => model.DepartmentID, new { @id = "idinput" })
+        </div>
+        <table>
+
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ChangedByFullName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.ChangedByFullName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.DepartmentName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.OrganizationName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.LocationName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.LocationName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentEmail)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.DepartmentEmail)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentPhone)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.DepartmentPhone)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentChiefFullName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.DepartmentChiefFullName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ResponsiblePersonFullName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.ResponsiblePersonFullName)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Deactivate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.DisplayFor(model => model.Deactivate)
+                    </div>
+                </td>
+            </tr>
+
+</table>
+
+    </fieldset>
+            }
+
+    </div>

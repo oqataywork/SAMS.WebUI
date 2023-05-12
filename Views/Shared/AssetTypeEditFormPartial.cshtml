@@ -1,0 +1,212 @@
+﻿@using SAMS.Model;
+
+@model AssetTypeModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+<script src="~/Static/v1/js/imgUpload.js"></script>
+<div>
+
+    @using (Html.BeginForm("AssetTypes_Create_or_Update", "AssetTypes", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <div hidden="hidden">
+                @Html.TextBoxFor(model => model.AssetTypeID, new { @id = "idinput" })
+            </div>
+            <table>
+
+                <tr>
+                    <td colspan="2">
+                        <div class="pane-content">
+                            <div class="img-container" style="width: 100%; height: 100%">
+                                <img id="uploadImage" class="img-thumbnail image" style="height: 250px;"/>
+                                <div class="middle">
+                                    <input type="button" id="btnUpload" class="btn btn-success" value="Загрузить" />
+                                    <input type="button" id="btnSave" class="btn btn-danger" style="visibility:hidden" value="Сохранить" />
+                                </div>
+                            </div>
+                            <input type="file" id="file" name="file" style="display:none" />
+                            <input type="hidden" id="fileContent" name="Photo" />
+                            <input type="hidden" id="fileType" name="FileType" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td >
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.AssetTypeName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.AssetTypeName)
+                                        @Html.ValidationMessageFor(model => model.AssetTypeName)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.AssetCategoryID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.AssetCategoryID)
+                                        @Html.ValidationMessageFor(model => model.AssetCategoryID)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ScheduleTypeID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.ScheduleTypeID)
+                                        @Html.ValidationMessageFor(model => model.ScheduleTypeID)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SingleInstance)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.SingleInstance)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+        </fieldset>
+    }
+
+</div>
+<script>
+
+    function displayLoading(target) {
+        var element = $(target);
+        kendo.ui.progress(element, true);
+        setTimeout(function () {
+            kendo.ui.progress(element, false);
+        }, 2000);
+    }
+
+    $("#btnSave").on("click", function () {
+
+        displayLoading($("#intSidepanel"));
+        var _id = '@Model.AssetTypeID';
+        var imagestr = $("#fileContent").val();
+
+        setTimeout(function () {
+            $.ajax({
+                type: "POST",
+                url: "/AssetTypes/UpdateImage",
+                data: { id: _id, imagebase64: imagestr },
+                async: false,
+                success: function (respData) {
+                    if (respData.success) {
+                        Swal.fire({ type: 'success', text: 'Şəkil uğurla yeniləndi', showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                        var grid = $("#AssetTypegrid").getKendoGrid();
+                        grid.dataSource.read();
+                    }
+                    else {
+                        Swal.fire({ type: 'error', text: respData.responseText, showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false })
+                    }
+                    kendo.ui.progress($("#intSidepanel"), false);
+                },
+                error: function (error) {
+                    Swal.fire({ type: 'error', text: error.responseText, showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                    kendo.ui.progress($("#intSidepanel"), false);
+                }
+            });
+
+
+            //let responseData = $.ajax({
+            //    type: "POST",
+            //    url: "/Personnels/UpdateImage",
+            //    data: { id: _id, imagebase64: imagestr },
+            //    async: false
+            //}).responseJSON;
+            //if (responseData != null) {
+            //    kendo.ui.progress($(document.body), false);
+            //    var grid = $("#grid").getKendoGrid();
+            //    grid.dataSource.read();
+            //}
+
+            document.getElementById("btnSave").style.visibility = "hidden";
+            document.getElementById("btnUpload").style.visibility = "visible";
+        }, 100)
+
+
+        //let responseData = $.ajax({
+        //    type: "POST",
+        //    url: "/AssetTypes/UpdateImage",
+        //    data: { id: _id, imagebase64: imagestr },
+        //    async: false
+        //}).responseJSON;
+        //if (responseData != null) {
+        //    var grid = $("#AssetTypegrid").getKendoGrid();
+        //    grid.dataSource.read();
+        //}
+
+    })
+</script>

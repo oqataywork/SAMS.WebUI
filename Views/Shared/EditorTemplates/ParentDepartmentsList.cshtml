@@ -1,0 +1,16 @@
+﻿@model Guid?
+@(Html.Kendo().DropDownListFor(m => m)
+                .DataValueField("DepartmentID")
+                .DataTextField("DepartmentName")
+    .OptionLabel("baş şöbəni seçin...")
+    .ValuePrimitive(true)
+                .Filter("contains")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetPossibleParentDepartments", "Departments").Data("FunDepartmentID");
+                    })
+                    .ServerFiltering(false);
+                })
+            )

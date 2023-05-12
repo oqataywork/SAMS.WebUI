@@ -1,0 +1,253 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function MeasurementUnitTypegriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#MeasurementUnitTypegrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function MeasurementUnitTypegridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#MeasurementUnitTypegrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onMeasurementUnitTypegridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.MeasurementUnitTypeID;
+          $("#MeasurementUnitTypeID").val(id);
+        }
+    }
+
+
+
+
+    function FunMeasurementUnitTypeID() {
+        var _selId = $("#MeasurementUnitTypeID").val();
+        return {
+            measurementunittypeid: _selId
+        };
+    }
+
+    function SetMeasurementUnitTypegrid_edit(arg) {
+        if (arg === true) {
+            $("#MeasurementUnitTypegrid_edit_button").hide();
+            $("#MeasurementUnitTypegrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#MeasurementUnitTypegrid_add_button").hide();
+            $("#MeasurementUnitTypegrid_cancel_button").show();
+            $("#MeasurementUnitTypegrid_update_button").show();
+        }
+        else {
+            $("#MeasurementUnitTypegrid_edit_button").show();
+            $("#MeasurementUnitTypegrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#MeasurementUnitTypegrid_add_button").show();
+            $("#MeasurementUnitTypegrid_cancel_button").hide();
+            $("#MeasurementUnitTypegrid_update_button").hide();
+        }
+    }
+
+    function AddMeasurementUnitTypegridrow() {
+        $("#MeasurementUnitTypeID").val('');
+        grid = $("#MeasurementUnitTypegrid").data("kendoGrid");
+        grid.addRow();
+        SetMeasurementUnitTypegrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#MeasurementUnitTypegrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#MeasurementUnitTypegrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetMeasurementUnitTypegrid_edit(true);
+            }
+        });
+
+        $("#MeasurementUnitTypegrid_add_button").on("click", function () {
+            AddMeasurementUnitTypegridrow();
+        });
+
+        $("#MeasurementUnitTypegrid_delete_button").on("click", function () {
+            grid = $("#MeasurementUnitTypegrid").data("kendoGrid");
+            var sel = $("#MeasurementUnitTypegrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetMeasurementUnitTypegrid_edit(false);
+        });
+
+        $("#MeasurementUnitTypegrid_update_button").on("click", function () {
+            debugger;
+            $("#MeasurementUnitTypegrid").data("kendoGrid").saveChanges();
+            SetMeasurementUnitTypegrid_edit(false);
+        });
+
+        $("#MeasurementUnitTypegrid_cancel_button").on("click", function () {
+            $("#MeasurementUnitTypegrid").data("kendoGrid").cancelChanges();
+            SetMeasurementUnitTypegrid_edit(false);
+        });
+        SetMeasurementUnitTypegrid_edit(false);
+
+        $("#MeasurementUnitTypegrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="MeasurementUnitTypeID" id="MeasurementUnitTypeID" />
+<div>
+        @{
+            int MeasurementUnitTypePermission = (int)ViewData["MeasurementUnitTypePermission"];
+        }
+        @(Html.Kendo().Grid<MeasurementUnitTypeModel>()
+                        .Name("MeasurementUnitTypegrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (MeasurementUnitTypePermission >2){           
+                                                     <div id="MeasurementUnitTypegrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (MeasurementUnitTypePermission >3){
+                                                    <div id="MeasurementUnitTypegrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (MeasurementUnitTypePermission ==5){
+                                                    <div id="MeasurementUnitTypegrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="MeasurementUnitTypegrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="MeasurementUnitTypegrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.UnitTypeName);
+				                  columns.Bound(p => p.InternationalAbr);
+				                  columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+				                  columns.Bound(p => p.CreateDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangeDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangedByFullName);
+                          columns.Bound(p => p.MeasurementUnitTypeID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onMeasurementUnitTypegridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("MeasurementUnitTypegriderror_error")
+                            .RequestEnd("MeasurementUnitTypegridrequest_end")
+                        )
+                        .Read(ac => ac.Action("MeasurementUnitTypes_Read", "MeasurementUnitTypes"))
+                        .Create(ac => ac.Action("MeasurementUnitTypes_Create", "MeasurementUnitTypes"))
+                        .Update(ac => ac.Action("MeasurementUnitTypes_Update", "MeasurementUnitTypes"))
+                        .Destroy(ac => ac.Action("MeasurementUnitTypes_Destroy", "MeasurementUnitTypes"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.MeasurementUnitTypeID); model.Field(p => p.MeasurementUnitTypeID).Editable(false);
+				model.Field(p => p.UnitTypeName);
+				model.Field(p => p.InternationalAbr);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy).Editable(false);
+				model.Field(p => p.ChangedByFullName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#MeasurementUnitTypegrid")
+    .Filter("td:nth-child(7)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

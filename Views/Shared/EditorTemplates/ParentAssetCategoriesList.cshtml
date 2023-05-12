@@ -1,0 +1,18 @@
+﻿@model Guid?
+    @(Html.Kendo().DropDownListFor(m => m)
+                .DataValueField("AssetCategoryID")
+                .DataTextField("AssetCategoryName")
+    .ValuePrimitive(true)
+                .Filter("contains")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetPossibleParentCategories", "AssetCategories").Data("AssetCategoryID");
+                    })
+                    .ServerFiltering(false);
+                })
+            //.Enable(false)
+            //.AutoBind(false)
+            //.CascadeFrom("categories")
+            )

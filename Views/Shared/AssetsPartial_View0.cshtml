@@ -1,0 +1,424 @@
+﻿@using SAMS.Model
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    var postUrl = '@Url.Action("Assets_New_or_Update", "Assets")';
+
+    function ongridChange(e) {
+      var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetID;
+          $("#cat_id").val(id);
+          if (document.getElementById("intSidepanel").style.width != "" & document.getElementById("intSidepanel").style.width != "0px" & document.getElementById("intSidepanel").style.width != "0%")
+             LoadReadForm(id);        
+        }
+    }
+
+    function LoadReadForm(id){
+          var element = $("#editForm");
+          kendo.ui.progress(element, true);
+          $("#editForm").load('@(Url.Action("GetAssetReadForm", "Assets", null, Request.Url.Scheme))?id=' + id, function () {
+              kendo.ui.progress(element, false);
+          });       
+    }
+
+    function LoaddefaultReadForm(){
+      var id = $("#cat_id").val();
+      LoadReadForm(id);
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#Assetgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+
+function AssetID() {
+        var _selId = $("#cat_id").val();
+        return {
+            AssetID: _selId
+        };
+    }
+
+    function griderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#Assetgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function openRight() {
+        document.getElementById("intmainbodydiv").style.width = "30%";
+        document.getElementById("intSidepanel").style.width = "70%";
+        document.getElementById("intSidepanel").style.display = "block";
+    }
+
+    function closeRight() {
+        document.getElementById("intmainbodydiv").style.width = "100%";
+        document.getElementById("intSidepanel").style.width = "0%";
+        document.getElementById("intSidepanel").style.display = "none";
+    }
+    function toggleRight() {
+        if (document.getElementById("intSidepanel").style.width === "" | document.getElementById("intSidepanel").style.width === "0px" | document.getElementById("intSidepanel").style.width === "0%")
+            openRight()
+        else
+            closeRight()
+    }
+    function Addgridrow() {
+          var element = $("#editForm");
+          kendo.ui.progress(element, true);
+        $("#editForm").load('@(Url.Action("GetAssetNewForm", "Assets", null, Request.Url.Scheme))', function () {
+            openRight();
+            Setgrid_edit(true);
+            kendo.ui.progress(element, false);
+        });
+    }
+
+    function Setgrid_edit(arg) {
+
+        if (arg === true) {
+            openRight();
+            $("#grid_edit_button").hide();
+            $("#grid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#grid_add_button").hide();
+            $("#grid_cancel_button").show();
+            $("#grid_update_button").show();
+            $(".k-grid-content", $("#Assetgrid")).addClass("k-state-disabled");
+
+        }
+        else {
+            $("#grid_edit_button").show();
+            $("#grid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#grid_add_button").show();
+            $("#grid_cancel_button").hide();
+            $("#grid_update_button").hide();
+            $(".k-grid-content", $("#Assetgrid")).removeClass("k-state-disabled");
+        }
+    }
+
+    $(document).ready(function () {
+
+        closeRight();
+
+        var window = $("#window").kendoWindow({
+            height: "600px",
+            modal: true,
+            title: "Constructor",
+            visible: false,
+            width: "800px"
+
+        }).data("kendoWindow");
+
+        $("#grid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#Assetgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                var element = $("#editForm");
+                kendo.ui.progress(element, true);
+                var dataItem = grid.dataItem(selectedrow);
+                var id = dataItem.AssetID;
+                $("#editForm").load('@(Url.Action("GetAssetEditForm", "Assets", null, Request.Url.Scheme))?id=' + id, function () {
+                    Setgrid_edit(true);
+                    kendo.ui.progress(element, false);
+                });
+
+            }
+        });
+
+        $("#grid_add_button").on("click",
+            function() {
+                Addgridrow();
+            });
+
+        $("#grid_delete_button").on("click",
+            function() {
+                grid = $("#Assetgrid").data("kendoGrid");
+                var sel = $("#Assetgrid").data("kendoGrid").select();
+                grid.removeRow(sel);
+                Setgrid_edit(false);
+            });
+
+        $("#grid_update_button").on("click", function (e) {
+            //e.preventDefault();
+
+            var validator = $("#modForm").validate({
+                highlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().addClass('has-error');
+                    }
+                    else {
+                        $(element).parent().addClass('has-error');
+                    }
+                },
+                unhighlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().removeClass('has-error');
+                    }
+                    else {
+                        $(element).parent().removeClass('has-error');
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    if (element[0].type == 'select' || element[0].type == 'select-one') {
+                        error.appendTo(element.parent().parent('div'));
+                    }
+                    else {
+                        error.appendTo(element.parent('div'));
+                    }
+                },
+                rules: {
+                },
+                messages: {
+                },
+                submitHandler: function (form) {
+                    kendo.ui.progress($(document.body), true);
+                    var data = $('#modForm').serialize();
+                    $.ajax({
+                        type: "POST",
+                        url: postUrl,
+                        data: data,
+                        beforeSend: function () {
+
+                        },
+                        success: function (res) {
+                            kendo.ui.progress($(document.body), false);
+                            if (res.Errors) {
+                                Swal.fire({ icon: 'error', text: res.Errors.exception.errors, showConfirmButton: true })
+                            }
+                            else {
+                                Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 })
+                                $("#Assetgrid").data("kendoGrid").dataSource.read();
+                                Setgrid_edit(false);
+                                LoaddefaultReadForm();
+                            }
+                        },
+                        error: function (error) {
+                            kendo.ui.progress($(document.body), false);
+                            $('#monitorForm').find("input, select, textarea, button").prop("disabled", false);
+                            Swal.fire({ type: 'error', text: "Xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.", showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false })
+                        }
+                    });
+                }
+            });
+            $("#modForm").submit();
+        });
+
+        $("#grid_cancel_button").on("click",
+            function() {
+                $("#Assetgrid").data("kendoGrid").cancelChanges();
+                Setgrid_edit(false);
+                LoaddefaultReadForm();
+            });
+
+        $("#Asset_construct_button").on("click",
+            function () {
+                grid = $("#Assetgrid").data("kendoGrid");
+                var sel = $("#Assetgrid").data("kendoGrid").select();
+
+                var selectedRow = $("#Assetgrid").data("kendoGrid").dataItem(sel);
+
+
+                var dialog = $("#window").data("kendoWindow");
+                dialog.refresh({
+                    url: "../Assets/AjaxContent",
+                    data: { AssetID: selectedRow.AssetID }
+                });
+                dialog.center().open();
+            });
+        Setgrid_edit(false);
+
+//$(".k-grid-content").dblclick(function () {
+        //    debugger;
+        //    toggleRight();
+        //});
+
+
+        $("#grid tbody").on("dblclick", "td", function (e) {
+            toggleRight();
+            var cellElement = this;
+            var cell = $(cellElement);
+            var uid=cell.closest('tr').attr('data-uid')
+            var grid = $("#Assetgrid").data("kendoGrid");
+            var row = grid.table.find("[data-uid=" + uid + "]");
+            var id = grid.dataItem(row).AssetID;
+            $("#cat_id").val(id);
+            if (document.getElementById("intSidepanel").style.width != "" & document.getElementById("intSidepanel").style.width != "0px" & document.getElementById("intSidepanel").style.width != "0%")
+                LoadReadForm(id);
+        });
+
+        $("#Assetgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body >
+    <input type="hidden" name="cat_id" id="cat_id" />
+        @{
+            int AssetPermission = (int)ViewData["AssetPermission"];
+        }
+    <table>
+        <tr>
+
+            <td id="lefttd" >
+                <div id="intmainbodydiv" class="partialpanel" style="width: 100%; position: initial;">
+                    @(Html.Kendo().Grid<AssetModel>()
+                        .Name("Assetgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetPermission >2){
+                                                     <div id="grid_add_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetPermission >3){
+                                                    <div id="grid_edit_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetPermission ==5){
+                                                    <div id="grid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="grid_update_button" class="k-button-icontext k-grid-update circleButton" type="submit">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="grid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="Asset_construct_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='fas fa-sitemap' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+
+				columns.Bound(p => p.AssetTypeID).ClientTemplate("#:AssetTypeName#");
+				columns.Bound(p => p.SerialNumber);
+				columns.Bound(p => p.ResponsibleDepartmentID).ClientTemplate("#:ResponsibleDepartmentName#");
+				columns.Bound(p => p.AssetStatus).ClientTemplate("#:AssetStatusEnumName#");
+				columns.Bound(p => p.CommissioningDate).Format("{0:dd.MM.yyyy}");
+				columns.Bound(p => p.Remarks);
+                          columns.Bound(p => p.AssetID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("ongridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Read(ac => ac.Action("Assets_Read", "Assets"))
+                        .Create(ac => ac.Action("Assets_New", "Assets"))
+                        .Update(ac => ac.Action("Assets_Update", "Assets"))
+                        .Destroy(ac => ac.Action("Assets_Destroy", "Assets"))
+                        .Model(model =>
+                        {
+
+				            model.Id(p => p.AssetID); model.Field(p => p.AssetID).Editable(false);
+				            model.Field(p => p.AssetTypeID);
+				            model.Field(p => p.SerialNumber);
+				            model.Field(p => p.TelemetryBoundObjectID);
+				            model.Field(p => p.ResponsibleDepartmentID);
+				            model.Field(p => p.AssetStatus);
+				            model.Field(p => p.CommissioningDate);
+				            model.Field(p => p.Remarks);
+				            model.Field(p => p.CreateDate);
+				            model.Field(p => p.ChangeDate);
+				            model.Field(p => p.ChangedBy);
+                            model.Field(p => p.ChangedByFullName).Editable(false);
+                            model.Field(p => p.AssetTypeName).Editable(false);
+                            model.Field(p => p.AssetStatusEnumName).Editable(false);
+                            model.Field(p => p.ResponsibleDepartmentName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#grid")
+    .Filter("td:nth-child(7)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+
+    </div>
+            </td>
+
+            <td id="righttd" >
+                <div id="intSidepanel" class="intsidebar" >
+                    <div id="editForm" >
+                    @{Html.RenderPartial("AssetReadFormPartial");}
+                </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+<div id="window"></div>
+</body>

@@ -1,0 +1,173 @@
+﻿@using SAMS.Model;
+
+@model DepartmentModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+<div>
+
+    @using (Html.BeginForm("Departments_Create_or_Update", "Departments", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+    <fieldset>
+        <div hidden="hidden">
+            @Html.TextBoxFor(model => model.DepartmentID, new { @id = "idinput" })
+        </div>
+        <table>
+
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ParentDepartmentID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.ParentDepartmentID)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.DepartmentName)
+                                    @Html.ValidationMessageFor(model => model.DepartmentName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.OrganizationID)
+                                    @Html.ValidationMessageFor(model => model.OrganizationID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.LocationID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.LocationID)
+                                    @Html.ValidationMessageFor(model => model.LocationID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentEmail)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.DepartmentEmail)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentPhone)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.DepartmentPhone)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentChief)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.DepartmentChief)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ResponsiblePerson)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.ResponsiblePerson)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Deactivate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Deactivate)
+                    </div>
+                </td>
+            </tr>
+
+</table>
+
+    </fieldset>
+            }
+
+    </div>

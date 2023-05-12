@@ -1,0 +1,250 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetAttributeMapgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetAttributeMapgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetAttributeMapgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetAttributeMapgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetAttributeMapgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetAttributeMapID;
+          $("#AssetAttributeMapID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetAttributeMapID() {
+        var _selId = $("#AssetAttributeMapID").val();
+        return {
+            assetattributemapid: _selId
+        };
+    }
+
+    function SetAssetAttributeMapgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetAttributeMapgrid_edit_button").hide();
+            $("#AssetAttributeMapgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetAttributeMapgrid_add_button").hide();
+            $("#AssetAttributeMapgrid_cancel_button").show();
+            $("#AssetAttributeMapgrid_update_button").show();
+        }
+        else {
+            $("#AssetAttributeMapgrid_edit_button").show();
+            $("#AssetAttributeMapgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetAttributeMapgrid_add_button").show();
+            $("#AssetAttributeMapgrid_cancel_button").hide();
+            $("#AssetAttributeMapgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetAttributeMapgridrow() {
+        $("#AssetAttributeMapID").val('');
+        grid = $("#AssetAttributeMapgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetAttributeMapgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetAttributeMapgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetAttributeMapgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetAttributeMapgrid_edit(true);
+            }
+        });
+
+        $("#AssetAttributeMapgrid_add_button").on("click", function () {
+            AddAssetAttributeMapgridrow();
+        });
+
+        $("#AssetAttributeMapgrid_delete_button").on("click", function () {
+            grid = $("#AssetAttributeMapgrid").data("kendoGrid");
+            var sel = $("#AssetAttributeMapgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetAttributeMapgrid_edit(false);
+        });
+
+        $("#AssetAttributeMapgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetAttributeMapgrid").data("kendoGrid").saveChanges();
+            SetAssetAttributeMapgrid_edit(false);
+        });
+
+        $("#AssetAttributeMapgrid_cancel_button").on("click", function () {
+            $("#AssetAttributeMapgrid").data("kendoGrid").cancelChanges();
+            SetAssetAttributeMapgrid_edit(false);
+        });
+        SetAssetAttributeMapgrid_edit(false);
+
+        $("#AssetAttributeMapgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetAttributeMapID" id="AssetAttributeMapID" />
+<div>
+        @{
+            int AssetAttributeMapPermission = (int)ViewData["AssetAttributeMapPermission"];
+        }
+        @(Html.Kendo().Grid<AssetAttributeMapModel>()
+                        .Name("AssetAttributeMapgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetAttributeMapPermission >2){           
+                                                     <div id="AssetAttributeMapgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetAttributeMapPermission >3){
+                                                    <div id="AssetAttributeMapgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetAttributeMapPermission ==5){
+                                                    <div id="AssetAttributeMapgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetAttributeMapgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetAttributeMapgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.AssetAttributeID).ClientTemplate("#:AssetAttributeName#");
+				                  columns.Bound(p => p.AssetAttributeMapValue);
+                          columns.Bound(p => p.AssetAttributeMapID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(300))
+                        .Events(ev => ev
+                            .Change("onAssetAttributeMapgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetAttributeMapgriderror_error")
+                            .RequestEnd("AssetAttributeMapgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetAttributeMaps_ReadByID", "Assets").Data("FunAssetID"))
+                        .Create(ac => ac.Action("AssetAttributeMaps_New", "AssetAttributeMaps").Data("FunAssetID"))
+                        .Update(ac => ac.Action("AssetAttributeMaps_Update", "AssetAttributeMaps"))
+                        .Destroy(ac => ac.Action("AssetAttributeMaps_Destroy", "AssetAttributeMaps"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetAttributeMapID); model.Field(p => p.AssetAttributeMapID).Editable(false);
+				model.Field(p => p.AssetAttributeID);
+				model.Field(p => p.AssetID);
+				model.Field(p => p.AssetAttributeMapValue);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.AssetAttributeName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetAttributeMapgrid")
+    .Filter("td:nth-child(3)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

@@ -1,0 +1,188 @@
+﻿
+@{
+    /**/
+
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SAMS</title>
+
+    <!--<link rel="icon" href="/static/v1/img/favicon.ico">-->
+
+    <!-- icon -->
+    <!--<link rel="stylesheet" href="~/Static/v1/css/fontawesome.min.css">-->
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="~/Static/v1/css/mBootstrap.min.css">
+    <link rel="stylesheet" href="~/Static/v1/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="~/Static/v1/css/DateTimePicker.css" />
+    <!-- main -->
+
+    <link rel="stylesheet" id="mainStyle" href="~/Static/v1/css/style.css">
+</head>
+
+<body id="login">
+    <div id="loader">
+        <div class="set-one">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="set-two">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+    <div id="loaderForAjax" style="display:none;">
+        <div class="set-one">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+        <div class="set-two">
+            <div class="circle"></div>
+            <div class="circle"></div>
+        </div>
+    </div>
+    <main>
+        <canvas id="c"></canvas>
+        <div class="container-fluid">
+            <div class="row signRow">
+                <div class="col-lg-6 logo" style="opacity: 0;">
+                    <div class="rabita">
+                        @*<img src="~/Static/v1/img/mhm_logo-az.png" alt="" />*@
+                    </div>
+                </div>
+                <div class="col-lg-6 sign">
+                    <div class="lgForm">
+                        <div class="form">
+                            <form class="rForm rForm1" id="loginForm">
+                                @Html.AntiForgeryToken()
+                                @*<div class="form-group">
+                                        <input type="text"
+                                               id="txtClientIp"
+                                               name="txtClientIp"
+                                               class="form-control-lg"
+                                               placeholder="İp Ünvan" value="10.10.233.5" />
+                                    </div>*@
+                                <div class="form-group">
+                                    <input type="text"
+                                           id="txtUserLogin"
+                                           name="txtUserLogin"
+                                           class="form-control-lg"
+                                           placeholder="İstifadəçi adı" />
+                                </div>
+                                <div class="form-group">
+                                    <input type="password"
+                                           id="txtPassword"
+                                           name="txtPassword"
+                                           class="form-control-lg"
+                                           placeholder="Şifrə" />
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="alertArea" style="display:none;">
+                                            <span>
+                                                @*Your network IP is: <h1 id=list>-</h1> Make the locals proud.*@
+                                                <h1 id="list" style="display:none;">-</h1>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button class="btn-lg" id="btnSubmit" type="submit">Daxil ol</button>
+                                    </div>
+                                </div>
+                                <p><a href="@Url.Action("ForgotPassword","Accounts")">Şifrəni unutmusan?</a></p>
+                                @*<a href="@Url.Action("Logout","Accounts")">
+                                        <i class="fas fa-power-off"></i>
+                                    </a>*@
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </main>
+    <script src="~/Static/v1/js/mJQuery.min.js"></script>
+    <script src="~/Static/v1/js/mPopper.min.js"></script>
+    <script src="~/Static/v1/js/mBootstrap.min.js"></script>
+    <script src="~/Static/v1/js/jquery.validate.min.js"></script>
+
+    <script src="~/Static/v1/js/bg.js"></script>
+
+    <script>
+        $(document).ajaxStart(function () {
+            $("#loaderForAjax").fadeIn(200);
+        });
+        $(document).ajaxComplete(function () {
+            $("#loaderForAjax").fadeOut(200);
+        });
+
+        function getQueryParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+            return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+     $('#loginForm').validate({
+            highlight: function (element) {
+                $(element).addClass('alert-danger');
+            },
+            unhighlight: function (element) {
+                $(element).removeClass('alert-danger');
+            },
+            errorPlacement: function (error, element) { },
+            invalidHandler: function () { },
+            rules: {
+                txtUserLogin: "required",
+                txtPassword: "required"
+            },
+            submitHandler: function (form) {
+                var request_data = $('#loginForm').serialize();
+                var url = '@Url.Action("login", "accounts")';// '/accounts/login';
+                $.post(url, request_data).done(function (respData) {
+                    if (respData.status == "true") {
+                        //window.location.reload()
+                        if (respData.redirectType == "1")
+                        {
+                            var returnURL = getQueryParameterByName("return");
+                            if (returnURL.indexOf("/operators/") > -1 || returnURL.indexOf("/registration/") > -1) {
+                                window.location.assign('@Url.Action("list", "customers")');//"/customers/list");
+                            }
+                            else {
+                                window.location.assign(returnURL);
+                            }
+                        }
+                        else if (respData.redirectType == "2")
+                        {
+                            window.location.assign('@Url.Action("Index", "operators")');
+                        }
+                        else if (respData.redirectType == "3")
+                        {
+                            window.location.assign('@Url.Action("index", "registration")');
+                        }
+                    }
+                    else {
+                        $('.alertArea').css("display", "block");
+                        $('.alertArea span').text(respData.message);
+                    }
+                })
+                .fail(function (xhr, status, error) {
+                    $('.alertArea').css("display", "block");
+                    $('.alertArea span').text("Xəta baş verdi.Zəhmət olmasa, səhifəni yeniləyin.");
+                });
+            }
+        });
+        setTimeout(() => {
+            $("#loader").fadeOut('slow');
+        }, 1000);
+    </script>
+</body>
+</html>
+

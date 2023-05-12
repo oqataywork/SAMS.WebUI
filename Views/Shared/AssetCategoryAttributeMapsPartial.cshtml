@@ -1,0 +1,252 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetCategoryAttributeMapgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetCategoryAttributeMapgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetCategoryAttributeMapgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetCategoryAttributeMapgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetCategoryAttributeMapgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetCategoryAttributeMapID;
+          $("#AssetCategoryAttributeMapID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetCategoryAttributeMapID() {
+        var _selId = $("#AssetCategoryAttributeMapID").val();
+        return {
+            assetcategoryattributemapid: _selId
+        };
+    }
+
+    function SetAssetCategoryAttributeMapgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetCategoryAttributeMapgrid_edit_button").hide();
+            $("#AssetCategoryAttributeMapgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetCategoryAttributeMapgrid_add_button").hide();
+            $("#AssetCategoryAttributeMapgrid_cancel_button").show();
+            $("#AssetCategoryAttributeMapgrid_update_button").show();
+        }
+        else {
+            $("#AssetCategoryAttributeMapgrid_edit_button").show();
+            $("#AssetCategoryAttributeMapgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetCategoryAttributeMapgrid_add_button").show();
+            $("#AssetCategoryAttributeMapgrid_cancel_button").hide();
+            $("#AssetCategoryAttributeMapgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetCategoryAttributeMapgridrow() {
+        $("#AssetCategoryAttributeMapID").val('');
+        grid = $("#AssetCategoryAttributeMapgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetCategoryAttributeMapgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetCategoryAttributeMapgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetCategoryAttributeMapgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetCategoryAttributeMapgrid_edit(true);
+            }
+        });
+
+        $("#AssetCategoryAttributeMapgrid_add_button").on("click", function () {
+            AddAssetCategoryAttributeMapgridrow();
+        });
+
+        $("#AssetCategoryAttributeMapgrid_delete_button").on("click", function () {
+            grid = $("#AssetCategoryAttributeMapgrid").data("kendoGrid");
+            var sel = $("#AssetCategoryAttributeMapgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetCategoryAttributeMapgrid_edit(false);
+        });
+
+        $("#AssetCategoryAttributeMapgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetCategoryAttributeMapgrid").data("kendoGrid").saveChanges();
+            SetAssetCategoryAttributeMapgrid_edit(false);
+        });
+
+        $("#AssetCategoryAttributeMapgrid_cancel_button").on("click", function () {
+            $("#AssetCategoryAttributeMapgrid").data("kendoGrid").cancelChanges();
+            SetAssetCategoryAttributeMapgrid_edit(false);
+        });
+        SetAssetCategoryAttributeMapgrid_edit(false);
+
+        $("#AssetCategoryAttributeMapgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetCategoryAttributeMapID" id="AssetCategoryAttributeMapID" />
+<div>
+        @{
+            int AssetCategoryAttributeMapPermission = (int)ViewData["AssetCategoryAttributeMapPermission"];
+        }
+        @(Html.Kendo().Grid<AssetCategoryAttributeMapModel>()
+                        .Name("AssetCategoryAttributeMapgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetCategoryAttributeMapPermission >2){           
+                                                     <div id="AssetCategoryAttributeMapgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCategoryAttributeMapPermission >3){
+                                                    <div id="AssetCategoryAttributeMapgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCategoryAttributeMapPermission ==5){
+                                                    <div id="AssetCategoryAttributeMapgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetCategoryAttributeMapgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetCategoryAttributeMapgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.AssetAttributeID).ClientTemplate("#:AssetAttributeName#");
+				                  columns.Bound(p => p.AttrAssetCategoryID).ClientTemplate("#:AssetCategoryName#").Title("Category");
+				                  columns.Bound(p => p.IsRequired).ClientTemplate("<input disabled type= 'checkbox' #= IsRequired ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= IsRequired ? checked='checked' :'' # />");
+                          columns.Bound(p => p.AssetCategoryAttributeMapID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(300))
+                        .Events(ev => ev
+                            .Change("onAssetCategoryAttributeMapgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetCategoryAttributeMapgriderror_error")
+                            .RequestEnd("AssetCategoryAttributeMapgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetCategoryAttributeMaps_ReadByID", "AssetCategories").Data("CurrentID"))
+                        .Create(ac => ac.Action("AssetCategoryAttributeMaps_New", "AssetCategoryAttributeMaps"))
+                        .Update(ac => ac.Action("AssetCategoryAttributeMaps_Update", "AssetCategoryAttributeMaps"))
+                        .Destroy(ac => ac.Action("AssetCategoryAttributeMaps_Destroy", "AssetCategoryAttributeMaps"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetCategoryAttributeMapID); model.Field(p => p.AssetCategoryAttributeMapID).Editable(false);
+				model.Field(p => p.AssetAttributeID);
+				model.Field(p => p.AttrAssetCategoryID);
+				model.Field(p => p.IsRequired);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy).Editable(false);
+				model.Field(p => p.ChangedByFullName).Editable(false);
+				model.Field(p => p.AssetAttributeName).Editable(false);
+				model.Field(p => p.AssetCategoryName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetCategoryAttributeMapgrid")
+    .Filter("td:nth-child(4)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

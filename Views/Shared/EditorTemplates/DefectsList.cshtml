@@ -1,0 +1,52 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownDefectTypes", @class = "dropdownDefectTypes" })
+                .DataValueField("DefectTypeID")
+                .Filter("contains")
+                .DataTextField("DefectTypeName")
+                .DataSource(ds => ds.Read(a => a.Action("GetDefectTypesList", "DefectTypes"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="defect_type_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="adddefecttypewindow"></div>
+<script>
+
+    var window = $("#adddefecttypewindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownDefectTypes = $("#dropdownDefectTypes").data("kendoDropDownList");
+            dropdownDefectTypes.dataSource.read();
+
+        },
+        height: "600px",
+        modal: true,
+        title: "Units",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#defect_type_add_button").on("click", function () {
+        var dialog = $("#adddefecttypewindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../RepairServ/GetPartialView",
+            data: { directory: 'DefectTypesPartial' }
+        });
+        dialog.center().open();
+    })
+</script>

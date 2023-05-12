@@ -1,0 +1,53 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownOperInd", @class = "dropdownOperInd" })
+                .DataValueField("OperationIndicatorID")
+                .Filter("contains")
+                .DataTextField("OperationIndicatorName")
+                .DataSource(ds => ds.Read(a => a.Action("GetOperationIndicatorsList", "OperationIndicators"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="operind_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="addoperindwindow"></div>
+<script>
+
+    var window = $("#addoperindwindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownOperInd = $("#dropdownOperInd").data("kendoDropDownList");
+            dropdownOperInd.dataSource.read();
+
+        },
+        height: "600px",
+        modal: true,
+        title: "Operational indicators",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#operind_add_button").on("click", function () {
+        var dialog = $("#addoperindwindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'OperationIndicatorsPartial' }
+        });
+        dialog.center().open();
+    })
+</script>
+

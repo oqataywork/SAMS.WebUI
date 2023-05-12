@@ -1,0 +1,52 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownCharacteristicCategories", @class = "dropdownCharacteristicCategories" })
+                .Filter("contains")
+                //.Name("dropdownCharacteristicCategories")
+                .DataValueField("CharacteristicCategoryID")
+                .DataTextField("CharacteristicCategoryName")
+                .DataSource(ds => ds.Read(a => a.Action("CharacteristicsCategoriesList", "CharacteristicCategories"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="char_cat_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="addcharcatwindow"></div>
+<script>
+
+    var window = $("#addcharcatwindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownCharacteristicCategories = $("#dropdownCharacteristicCategories").data("kendoDropDownList");
+            dropdownCharacteristicCategories.dataSource.read();
+
+        },
+        height: "600px",
+        modal: true,
+        title: "Atttributes",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#char_cat_add_button").on("click", function () {
+        var dialog = $("#addcharcatwindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'CharacteristicCategoriesPartial' }
+        });
+        dialog.center().open();
+    })
+</script>

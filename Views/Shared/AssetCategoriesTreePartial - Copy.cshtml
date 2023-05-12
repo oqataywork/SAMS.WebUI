@@ -1,0 +1,473 @@
+﻿@using SAMS.Core.ViewModels
+
+@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/SamsStyles.css")" rel="stylesheet" type="text/css" />
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script src="~/Static/v1/js/jquery.validate.min.js"></script>
+
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<script src="~/Static/v1/Vendors/d3_mitch_tree/dist/js/d3-mitch-tree.min.js"></script>
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree.min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree-theme-default.min.css")" rel="stylesheet" type="text/css" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+
+<script src="~/Static/v1/js/sweetalert2.min.js"></script>
+<style>
+
+
+    html,
+    body,
+    #tabstrip-parent,
+    #tabstrip {
+        height: 100%;
+/*        width: 1100px;*/
+        margin: 0;
+        padding: 0;
+        border-width: 0;
+    }
+
+
+
+    .has-error {
+        border: 2px solid #cd0909 !important;
+    }
+
+        .has-error .error {
+            margin: 0 !important;
+            margin-top: 4px !important;
+            background: #ff000054 !important;
+            color: white !important;
+            padding: 2px 7px !important;
+            font-size: 13px !important;
+        }
+
+    .intsidebar {
+        background: #ebebeb;
+        border-right: 1px solid #bdbdbd;
+        right: 0;
+        position: fixed;
+        top: 150px;
+        height: 100%;
+        width: 260px;
+    }
+</style>
+
+
+<script>
+    async function getData() {
+        debugger;
+        $.get("/AssetCategories/GetAssetCategoriesTree").success(function (data) {
+            try {
+                return data;
+            } catch (e) {
+                console.log(e);
+            }
+        })
+    }
+</script>
+
+
+
+<script type="text/javascript">
+    var postUrl = '@Url.Action("AssetCategories_Update", "AssetCategories")';
+    function ongridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        var id = dataItem.AssetCategoryID;
+        $("#cat_id").val(id);
+        var assetCategoryAttributeMapgrid = $("#AssetCategoryAttributeMapgrid").getKendoGrid();
+        if (assetCategoryAttributeMapgrid)
+            assetCategoryAttributeMapgrid.dataSource.read();
+
+        var assetCategoryCharacteristicsMapgrid = $("#AssetCategoryCharacteristicsMapgrid").getKendoGrid();
+        if (assetCategoryCharacteristicsMapgrid)
+            assetCategoryCharacteristicsMapgrid.dataSource.read();
+
+    }
+
+    function CurrentID() {
+        var _selId = $("#cat_id").val();
+        return {
+            id: _selId
+        };
+    }
+
+    function charcatgrid_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function openRight() {
+
+        document.getElementById("lefttd").style.width = "60%";
+        document.getElementById("righttd").style.width = "40%";
+        document.getElementById("righttd").style.display = "initial";
+    }
+
+    function closeRight() {
+        document.getElementById("lefttd").style.width = "100%";
+        document.getElementById("righttd").style.width = "0%";
+        document.getElementById("righttd").style.display = "none";
+    }
+
+    function toggleRight() {
+        debugger;
+        if (document.getElementById("righttd").style.width === "" | document.getElementById("righttd").style.width === "0px" | document.getElementById("righttd").style.width === "0%")
+            openRight()
+        else
+            closeRight()
+    }
+
+    function Addcat() {
+
+        @*$("#editForm").load('@(Url.Action("GetDepartmentNewForm", "AssetCategories", null, Request.Url.Scheme))', function () {
+            Setcharcat_edit(true);
+        });*@
+        grid = $("#grid").data("kendoGrid");
+        grid.addRow();
+        Setgrid_edit(true);
+    }
+
+    function Setgrid_edit(arg) {
+
+        if (arg === true) {
+            $("#charcat_edit_button").hide();
+            $("#charcat_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#charcat_add_button").hide();
+            $("#charcat_cancel").show();
+            $("#charcat_update").show();
+            $(".k-grid-content", $("#grid")).addClass("k-state-disabled");
+
+        }
+        else {
+            $("#charcat_edit_button").show();
+            $("#charcat_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#charcat_add_button").show();
+            $("#charcat_cancel").hide();
+            $("#charcat_update").hide();
+            $(".k-grid-content", $("#grid")).removeClass("k-state-disabled");
+        }
+    }
+
+    $(document).ready(function () {
+        var treePlugin;
+        closeRight();
+        $("#charcat_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#grid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                Setgrid_edit(true);
+            }
+        });
+
+        $("#charcat_add_button").on("click", function () {
+            debugger;
+            Addcat();
+        })
+
+        $("#charcat_delete_button").on("click", function () {
+            grid = $("#grid").data("kendoGrid");
+            var sel = $("#grid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            Setgrid_edit(false);
+        })
+
+        $("#charcat_update_button").on("click", function () {
+            debugger;
+            $("#grid").data("kendoGrid").saveChanges();
+            Setgrid_edit(false);
+        })
+
+        $("#charcat_cancel_button").on("click", function () {
+            $("#grid").data("kendoGrid").cancelChanges();
+            Setgrid_edit(false);
+        })
+        Setgrid_edit(false);
+
+        $(".k-grid-content").dblclick(function () {
+            toggleRight();
+        });
+
+        //var data = await  getData();
+
+        //getGithubOrgs("https://api.github.com/users/deekshasharma/orgs").then((res) =>
+
+        //    console.log(res)
+
+        //);
+
+        //getData().then((res) => {
+        //    data = res;
+        //});
+
+        $.get("/AssetCategories/GetAssetCategoriesTree").success(function (data) {
+            try {
+                debugger;
+     //           var options = {
+     //               data: data,
+     //               allowZoom: false,
+					//element: document.getElementById("visualisation"),
+     //               getId: function (data) {
+     //                   return data.AssetCategoryID;
+     //               },
+     //               getChildren: function (data) {
+     //                   return data.ChildrenAssetCategories;
+     //               },
+     //               getBodyDisplayText: function (data) {
+     //                   return data.AssetCategoryName;
+     //               },
+     //               getTitleDisplayText: function (data) {
+     //                   return data.AssetCategoryCode;
+     //               },
+     //               orientation: 'topToBottom',
+     //               events: {
+     //                   nodeClick: function (event) {
+     //                       debugger;
+     //                       console.log("Click event was triggered!");
+
+     //                       // Note for 'collapse' or 'expand' event type
+     //                       // to trigger, you'll need to disable focus mode.
+     //                       // You can do this by passing in false for the
+     //                       // allowFocus setting.
+     //                       if (event.type == 'focus') {
+
+     //                           console.log("Node is being focused");
+     //                       }
+     //                       else if (event.type == 'collapse')
+     //                           console.log("Node is collapsing");
+     //                       else if (event.type == 'expand')
+     //                           console.log("Node is expanding");
+     //                       // You use the below line to cancel the
+     //                       // focus/expand/collapse event
+     //                       //   event.preventDefault();
+     //                   }
+     //               }
+     //           };
+     //           treePlugin = new d3.mitchTree.boxedTree(options).initialize();
+
+
+                treePlugin = new d3.mitchTree.boxedTree()
+                    .setData(data)
+                    .setAllowZoom(false)
+                    .setElement(document.getElementById("visualisation"))
+                    .setIdAccessor(function (data) {
+                        return data.id;
+                    })
+                    .setChildrenAccessor(function (data) {
+                        return data.ChildrenAssetCategories;
+                    })
+                    .setBodyDisplayTextAccessor(function (data) {
+                        return data.AssetCategoryName;
+                    })
+                    .setTitleDisplayTextAccessor(function (data) {
+                        return data.AssetCategoryCode;
+                    })
+                    .on("nodeClick", function (event) {
+                        var id = event.nodeDataItem.data.AssetCategoryID;
+                        $("#cat_id").val(id);
+                        var assetCategoryAttributeMapgrid = $("#AssetCategoryAttributeMapgrid").getKendoGrid();
+                        if (assetCategoryAttributeMapgrid)
+                            assetCategoryAttributeMapgrid.dataSource.read();
+
+                        console.log('The event object:')
+                        console.log(event);
+                        console.log("Click event was triggered!");
+
+                        // Note for 'collapse' or 'expand' event type
+                        // to trigger, you'll need to disable focus mode.
+                        // You can do this by passing in false for the
+                        // allowFocus setting.
+                        if (event.type == 'focus')
+                            console.log("Node is being focused");
+                        else if (event.type == 'collapse')
+                            console.log("Node is collapsing");
+                        else if (event.type == 'expand')
+                            console.log("Node is expanding");
+                        // You use the below line to cancel the
+                        // focus/expand/collapse event
+                        //   event.preventDefault();
+                    })
+                    .initialize();
+            } catch (e) {
+                console.log(e);
+            }
+        })
+
+    });
+
+
+</script>
+
+@helper ToolbarTemplate()
+{
+<div class="toolbar">
+    <div id="charcat_add_button" class="k-button-icontext  circleButton">
+        <a href="#">
+            <span class="inner"></span>
+            <i class='far fa-plus-square' style='font-size:18px'></i>
+        </a>
+    </div>
+
+    <div id="charcat_edit_button" class="k-button-icontext  circleButton">
+        <a href="#">
+            <span class="inner"></span>
+            <i class='far fa-edit' style='font-size:18px'></i>
+        </a>
+    </div>
+    <div id="charcat_delete_button" class="k-button-icontext k-grid-delete circleButton">
+        <a href="#">
+            <span class="inner"></span>
+            <i class='far fa-trash-alt' style='font-size:18px'></i>
+        </a>
+    </div>
+    <div id="charcat_update" class="k-button-icontext k-grid-update circleButton" type="submit">
+        <a href="#">
+            <span class="inner"></span>
+            <i class='far fa-check-circle' style='font-size:18px'></i>
+        </a>
+    </div>
+    <div id="charcat_cancel" class="k-button-icontext k-grid-cancel circleButton">
+        <a href="#">
+            <span class="inner"></span>
+            <i class='far fa-times-circle' style='font-size:18px'></i>
+        </a>
+    </div>
+</div>
+}
+
+<script type="text/x-kendo-template" id="toolbarTemplate">
+   @Html.Raw(@ToolbarTemplate().ToHtmlString().Replace("#", "\\#").Replace("</scr", "<\\/scr"))
+</script>
+
+<body style="background-color: #00B9CE; ">
+    <input type="hidden" name="cat_id" id="cat_id" />
+
+    <table>
+        <tr>
+            <td id="lefttd">
+                    <div id="tabstrip" style="min-width: 800px; min-height: 800px; top: 0; ">
+                        <ul>
+                            <li class="k-active">
+                                Tree
+                            </li>
+                            <li>
+                                Table
+                            </li>
+
+                        </ul>
+                        <div>
+                            <section id="visualisation" style="border: 1px black solid; "/>
+                        </div>
+                        <div>
+                            @(Html.Kendo().Grid<AssetCategoryViewModel>()
+                .Name("grid")
+                .ToolBar(toolbar =>
+                    {
+                        toolbar.Template(@<text>@ToolbarTemplate()</text>);
+                    })
+                .Columns(columns =>
+                {
+
+
+                    columns.Bound(p => p.AssetCategoryName);
+                    columns.Bound(p => p.AssetCategoryCode);
+                    columns.Bound(p => p.SingleInstance).ClientTemplate("<input disabled type= 'checkbox' #= SingleInstance ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= SingleInstance ? checked='checked' :'' # />");
+                    columns.Bound(p => p.ParentAssetCategoryName);
+                    columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+                    columns.Bound(p => p.CreateDate).Title("Created at").Format("{0:dd.MM.yyyy}");
+                    columns.Bound(p => p.ChangeDate).Title("Changed at").Format("{0:dd.MM.yyyy}");
+                    columns.Bound(p => p.ChangedByFullName);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Groupable()
+                .Resizable(resize => resize.Columns(true))
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Pageable(pager => pager.AlwaysVisible(true).PageSizes(new List<object> { 50, 100, "all" }))
+                .Navigatable()
+                .Filterable()
+                .Scrollable(scr => scr.Height(450))
+                .Events(ev => ev
+                    .Change("ongridChange")
+                )
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .PageSize(50)
+                .Read(ac => ac.Action("AssetCategories_Read", "AssetCategories"))
+                .Create(ac => ac.Action("AssetCategories_Create", "AssetCategories"))
+                .Update(ac => ac.Action("AssetCategories_Update", "AssetCategories"))
+                .Destroy(ac => ac.Action("AssetCategories_Destroy", "AssetCategories"))
+                .Model(model =>
+                {
+
+                    model.Id(p => p.AssetCategoryID);
+                    model.Field(p => p.AssetCategoryName);
+                    model.Field(p => p.AssetCategoryCode);
+                    model.Field(p => p.ParentAssetCategoryName).Editable(false);
+                    model.Field(p => p.ChangeDate).Editable(false);
+                    model.Field(p => p.CreateDate).Editable(false);
+                    model.Field(p => p.ChangedBy).Editable(false);
+                    model.Field(p => p.Deactivate);
+                    model.Field(p => p.SingleInstance);
+
+                })
+                )
+                )
+                        </div>
+                    </div>
+            </td>
+
+            <td id="righttd">
+
+                <div id="editForm" style="overflow-y: scroll; height: 800px">
+                    @{Html.RenderPartial("AssetCategoriesMapsPartial");}
+                </div>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+
+<script>
+    $("#tabstrip").kendoTabStrip({
+        animation: {
+            open: {
+                effects: "fadeIn"
+            }
+        }
+    });
+</script>

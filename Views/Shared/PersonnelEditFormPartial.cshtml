@@ -1,0 +1,304 @@
+﻿@using SAMS.Model;
+
+@model PersonnelModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+<script src="~/Static/v1/js/imgUpload.js"></script>
+<div>
+
+    @using (Html.BeginForm("Personnels_Create_or_Update", "Personnels", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+        <fieldset>
+            <div hidden="hidden">
+                @Html.TextBoxFor(model => model.PersonnelID, new { @id = "idinput" })
+            </div>
+            <table>
+
+                <tr>
+                    <td colspan="2">
+                        <div class="pane-content">
+                            <div class="img-container" style="width: 100%; height: 100%">
+                                <img id="uploadImage" class="img-thumbnail image" style="height: 250px;"/>
+                                <div class="middle">
+                                    <input type="button" id="btnUpload" class="btn btn-success" value="Загрузить" />
+                                    <input type="button" id="btnSave" class="btn btn-danger" style="visibility:hidden" value="Сохранить" />
+                                </div>
+                            </div>
+                            <input type="file" id="file" name="file" style="display:none" />
+                            <input type="hidden" id="fileContent" name="Photo" />
+                            <input type="hidden" id="fileType" name="FileType" />
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonnelFirstName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.PersonnelFirstName)
+                                        @Html.ValidationMessageFor(model => model.PersonnelFirstName)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonnelLastName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.PersonnelLastName)
+                                        @Html.ValidationMessageFor(model => model.PersonnelLastName)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonnelMiddleName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.PersonnelMiddleName)
+                                        @Html.ValidationMessageFor(model => model.PersonnelMiddleName)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DepartmentID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.DepartmentID)
+                                        @Html.ValidationMessageFor(model => model.DepartmentID)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CardID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.CardID)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PositionID)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            <table>
+                                <tr>
+                                    <td>
+                                        @Html.EditorFor(model => model.PositionID)
+                                        @Html.ValidationMessageFor(model => model.PositionID)
+                                    </td>
+                                    <td><div style="color:red; margin: 3px">*</div></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonnelEmail)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PersonnelEmail)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.PersonnelPhone)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.PersonnelPhone)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.DOB)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.DOB)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Gender)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Gender)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.EditorFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Remarks)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Remarks)
+                    </div>
+                </td>
+            </tr>
+            </table>
+
+        </fieldset>
+    }
+
+</div>
+
+<script>
+
+    function displayLoading(target) {
+        var element = $(target);
+        kendo.ui.progress(element, true);
+        setTimeout(function () {
+            kendo.ui.progress(element, false);
+        }, 2000);
+    }
+
+    $("#btnSave").on("click", function () {
+        
+        //kendo.ui.progress($("#intSidepanel"), true);
+        displayLoading($("#intSidepanel"));
+
+        var _id = '@Model.PersonnelID';
+        var imagestr = $("#fileContent").val();
+        setTimeout(function () {
+            $.ajax({
+                type: "POST",
+                url: "/Personnels/UpdateImage",
+                data: { id: _id, imagebase64: imagestr },
+                async: false,
+                success: function (respData) {
+                    if (respData.success) {
+                        Swal.fire({ type: 'success', text: 'Şəkil uğurla yeniləndi', showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                        var grid = $("#grid").getKendoGrid();
+                        grid.dataSource.read();
+                    }
+                    else {
+                        Swal.fire({ type: 'error', text: respData.responseText, showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false })
+                    }
+                    kendo.ui.progress($("#intSidepanel"), false);
+                },
+                error: function (error) {
+                    Swal.fire({ type: 'error', text: error.responseText, showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                    kendo.ui.progress($("#intSidepanel"), false);
+                }
+            });
+
+
+            //let responseData = $.ajax({
+            //    type: "POST",
+            //    url: "/Personnels/UpdateImage",
+            //    data: { id: _id, imagebase64: imagestr },
+            //    async: false
+            //}).responseJSON;
+            //if (responseData != null) {
+            //    kendo.ui.progress($(document.body), false);
+            //    var grid = $("#grid").getKendoGrid();
+            //    grid.dataSource.read();
+            //}
+
+            document.getElementById("btnSave").style.visibility = "hidden";
+            document.getElementById("btnUpload").style.visibility = "visible";
+        }, 100)
+
+
+
+  
+    })
+</script>

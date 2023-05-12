@@ -1,0 +1,130 @@
+﻿/*
+ * These hover-margin's don't work for some reason
+ * 0 - $spacing - $border
+ * ($spacing + $border) * -1
+*/
+/*body {
+  background-color: #00B9CE;
+}
+
+nav {
+  padding: 40px;
+}
+
+nav li {
+  float: left;
+  font-size: 2em;
+  margin-right: 40px;
+  line-height: 80px;
+  position: relative;
+  text-align: center;
+}
+nav li a {
+  background-color: #fff;
+  color: #00B9CE;
+  display: block;
+  height: 80px;
+  position: relative;
+  text-decoration: none;
+  width: 80px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -moz-transition: color 0.1s;
+  -o-transition: color 0.1s;
+  -webkit-transition: color 0.1s;
+  transition: color 0.1s;
+}
+nav li a i {
+  position: relative;
+  z-index: 1;
+}
+nav li a .inner {
+  background-color: #00B9CE;
+  display: block;
+  height: 0;
+  left: 50%;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  width: 0;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  -moz-transition: all 0.1s;
+  -o-transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
+}
+nav li a:hover {
+  color: #fff;
+}
+nav li a:hover .inner {
+  height: 76px;
+  margin-left: -38px;
+  margin-top: -38px;
+  width: 76px;
+}*/
+
+
+
+    .circleButton {
+        float: left;
+      /*  font-size: 2em;*/
+        margin-right: 20px;
+        line-height: 36px;
+        position: relative;
+        text-align: center;
+    }
+
+    .circleButton a {
+        background-color: #fff;
+        color: #00B9CE;
+        display: block;
+        height: 36px;
+        position: relative;
+        text-decoration: none;
+        width: 36px;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        -moz-transition: color 0.1s;
+        -o-transition: color 0.1s;
+        -webkit-transition: color 0.1s;
+        transition: color 0.1s;
+    }
+
+    .circleButton a i {
+        position: relative;
+        line-height: 2;
+        z-index: 1;
+    }
+
+    .circleButton a .inner {
+        background-color: #00B9CE;
+        display: block;
+        height: 0;
+        left: 50%;
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        width: 0;
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        -moz-transition: all 0.1s;
+        -o-transition: all 0.1s;
+        -webkit-transition: all 0.1s;
+        transition: all 0.1s;
+    }
+
+    .circleButton a:hover {
+        color: #fff;
+    }
+
+    .circleButton a:hover .inner {
+            height: 33px;
+            margin-left: -15px;
+            margin-top: -15px;
+            width: 33px;
+        }

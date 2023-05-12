@@ -1,0 +1,59 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+            @*@(Html.Kendo().DropDownListFor(m => m)
+                .DataValueField("AssetAttributeID")
+                .DataTextField("AssetAttributeName")
+                .ValuePrimitive(true)
+                .BindTo((System.Collections.IEnumerable)ViewData["asset_attributes_list"])
+                )*@
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownAtributes", @class = "dropdownAtributes" })
+                .Filter("contains")
+                //.Name("dropdownAtributes")
+                .ValuePrimitive(true)
+                .DataValueField("AssetAttributeID")
+                .DataTextField("AssetAttributeName")
+                .DataSource(ds => ds.Read(a => a.Action("AttributesList", "AssetAttributes"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="asset_attribute_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="addattributewindow"></div>
+<script>
+
+    var window = $("#addattributewindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownAtributes = $("#dropdownAtributes").data("kendoDropDownList");
+            dropdownAtributes.dataSource.read();
+            
+        },
+        height: "600px",
+        modal: true,
+        title: "Atttributes",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#asset_attribute_add_button").on("click", function () {
+        var dialog = $("#addattributewindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'AssetAttributesPartial' }
+        });
+        dialog.center().open(); 
+    })
+</script>

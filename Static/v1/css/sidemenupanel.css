@@ -1,0 +1,60 @@
+.k-menu .k-state-selected > .k-link {
+    color: lightcoral;
+}
+
+.sidepanel {
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    height: 90%;
+    top: 100px;
+    left: 0;
+    background-color: #CECECE;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+    .sidepanel a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+        .sidepanel a:hover {
+            color: #f1f1f1;
+        }
+
+    .sidepanel .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+    }
+
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    position: absolute !important;
+    background-color: #CECECE;
+    color: white;
+    border: none;
+    left: 0px;
+    top: 100px;
+    bottom: 0px;
+    width: 20px;
+    padding: 0;
+}
+
+    .openbtn:hover {
+        background-color: #5FAEDF;
+    }
+
+.partialpanel {
+    position: fixed;
+    top: 105px;
+    left: 25px;
+}

@@ -1,0 +1,397 @@
+﻿
+@using Kendo.Mvc.UI
+@using SAMS.Model;
+
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+
+<script type="text/javascript">
+    var postUrl = '@Url.Action("Organizations_Create_or_Update", "Organizations")';
+
+
+
+    function ongridChange(e) {
+      var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.OrganizationID;
+          $("#cat_id").val(id);
+          if (document.getElementById("intSidepanel").style.width !== "" & document.getElementById("intSidepanel").style.width !== "0px" & document.getElementById("intSidepanel").style.width !== "0%")
+             LoadReadForm(id);        
+        }
+    }
+
+    function LoadReadForm(id){
+          var element = $("#editForm");
+          kendo.ui.progress(element, true);
+          $("#editForm").load('@(Url.Action("GetOrganizationReadForm", "Organizations", null, Request.Url.Scheme))?id=' + id, function () {
+              kendo.ui.progress(element, false);
+          });       
+    }
+
+    function LoaddefaultReadForm(){
+      var id = $("#cat_id").val();
+      LoadReadForm(id);
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#grid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+function FunOrganizationID() {
+        var _selId = $("#cat_id").val();
+        return {
+            organizationid: _selId
+        };
+    }
+
+    function griderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function openRight() {
+        document.getElementById("intmainbodydiv").style.width = "60%";
+        document.getElementById("intSidepanel").style.width = "40%";
+        document.getElementById("intSidepanel").style.display = "block";
+    }
+
+    function closeRight() {
+        document.getElementById("intmainbodydiv").style.width = "100%";
+        document.getElementById("intSidepanel").style.width = "0%";
+        document.getElementById("intSidepanel").style.display = "none";
+    }
+    function toggleRight() {
+        if (document.getElementById("intSidepanel").style.width === "" | document.getElementById("intSidepanel").style.width === "0px" | document.getElementById("intSidepanel").style.width === "0%")
+            openRight();
+        else
+            closeRight();
+    }
+    function Addgridrow() {
+          var element = $("#editForm");
+          kendo.ui.progress(element, true);
+        $("#editForm").load('@(Url.Action("GetOrganizationNewForm", "Organizations", null, Request.Url.Scheme))', function () {
+            openRight();
+            Setgrid_edit(true);
+            kendo.ui.progress(element, false);
+        });
+    }
+
+    function Setgrid_edit(arg) {
+
+        if (arg === true) {
+            openRight();
+            $("#grid_edit_button").hide();
+            $("#grid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#grid_add_button").hide();
+            $("#grid_cancel_button").show();
+            $("#grid_update_button").show();
+            $(".k-grid-content", $("#grid")).addClass("k-state-disabled");
+
+        }
+        else {
+            $("#grid_edit_button").show();
+            $("#grid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#grid_add_button").show();
+            $("#grid_cancel_button").hide();
+            $("#grid_update_button").hide();
+            $(".k-grid-content", $("#grid")).removeClass("k-state-disabled");
+        }
+    }
+
+    $(document).ready(function () {
+
+        closeRight();
+        $("#grid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#grid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                var element = $("#editForm");
+                kendo.ui.progress(element, true);
+                var dataItem = grid.dataItem(selectedrow);
+                var id = dataItem.OrganizationID;
+                $("#editForm").load('@(Url.Action("GetOrganizationEditForm", "Organizations", null, Request.Url.Scheme))?id=' + id, function () {
+                    Setgrid_edit(true);
+                    kendo.ui.progress(element, false);
+                });
+
+            }
+        });
+
+        $("#grid_add_button").on("click", function () {
+            Addgridrow();
+        });
+
+        $("#grid_delete_button").on("click", function () {
+            grid = $("#grid").data("kendoGrid");
+            var sel = $("#grid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            Setgrid_edit(false);
+        });
+
+        $("#grid_update_button").on("click", function (e) {
+            //e.preventDefault();
+
+            var validator = $("#modForm").validate({
+                highlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().addClass('has-error');
+                    }
+                    else {
+                        $(element).parent().addClass('has-error');
+                    }
+                },
+                unhighlight: function (element) {
+                    if (element.type == 'select' || element.type == 'select-one') {
+                        $(element).parent().parent().removeClass('has-error');
+                    }
+                    else {
+                        $(element).parent().removeClass('has-error');
+                    }
+                },
+                errorPlacement: function (error, element) {
+                    if (element[0].type == 'select' || element[0].type == 'select-one') {
+                        error.appendTo(element.parent().parent('div'));
+                    }
+                    else {
+                        error.appendTo(element.parent('div'));
+                    }
+                },
+                rules: {
+
+                    OrganizationName: {
+                        required: true
+                    }
+                },
+                messages: {
+
+                    OrganizationName: {
+                        required: "OrganizationName vacib xanadır zəhmət olmasa doldurun !"
+                    }
+                },
+                submitHandler: function (form) {
+                    kendo.ui.progress($(document.body), true);
+                    var data = $('#modForm').serialize();
+                    $.ajax({
+                        type: "POST",
+                        url: postUrl,
+                        data: data,
+                        beforeSend: function () {
+
+                        },
+                        success: function (res) {
+                            kendo.ui.progress($(document.body), false);
+                            if (res.Errors) {
+                                Swal.fire({ icon: 'error', text: res.Errors.exception.errors, showConfirmButton: true });
+                            }
+                            else {
+                                Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+                                $("#grid").data("kendoGrid").dataSource.read();
+                                Setgrid_edit(false);
+                                LoaddefaultReadForm();
+                            }
+                        },
+                        error: function (error) {
+                            kendo.ui.progress($(document.body), false);
+                            $('#monitorForm').find("input, select, textarea, button").prop("disabled", false);
+                            Swal.fire({ type: 'error', text: "Xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.", showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                        }
+                    });
+                }
+            });
+            $("#modForm").submit();
+        });
+
+        $("#grid_cancel_button").on("click", function () {
+            $("#grid").data("kendoGrid").cancelChanges();
+            Setgrid_edit(false);
+            LoaddefaultReadForm();
+        })
+        Setgrid_edit(false);
+
+//$(".k-grid-content").dblclick(function () {
+        //    debugger;
+        //    toggleRight();
+        //});
+
+//test
+        $("#grid tbody").on("dblclick", "td", function (e) {
+            toggleRight();
+            var cellElement = this;
+            var cell = $(cellElement);
+            var uid=cell.closest('tr').attr('data-uid')
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.table.find("[data-uid=" + uid + "]");
+            var id = grid.dataItem(row).OrganizationID;
+            $("#cat_id").val(id);
+            if (document.getElementById("intSidepanel").style.width != "" & document.getElementById("intSidepanel").style.width != "0px" & document.getElementById("intSidepanel").style.width != "0%")
+                LoadReadForm(id);
+        });
+
+        $("#grid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body >
+    <input type="hidden" name="cat_id" id="cat_id" />
+        @{
+            int OrganizationPermission = (int)ViewData["OrganizationPermission"];
+        }
+    <table>
+        <tr>
+            <td id="lefttd" >
+                <div id="intmainbodydiv" class="partialpanel" style="width: 100%; position: initial;">
+                    @(Html.Kendo().Grid<OrganizationModel>()
+                        .Name("grid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (OrganizationPermission >2){
+                                                     <div id="grid_add_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (OrganizationPermission >3){
+                                                    <div id="grid_edit_button" class="k-button-icontext  circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (OrganizationPermission ==5){
+                                                    <div id="grid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="grid_update_button" class="k-button-icontext k-grid-update circleButton" type="submit">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="grid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				columns.Bound(p => p.OrganizationName);
+				columns.Bound(p => p.OrganizationEmail);
+				columns.Bound(p => p.OrganizationPhone);
+				columns.Bound(p => p.OrganizationAddress);
+                          columns.Bound(p => p.OrganizationID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        
+                        .Scrollable(scr => scr.Height(600))
+
+                        .Events(ev => ev
+                            .Change("ongridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                            .Events(events => events
+                                .Error("griderror_error")
+                            )
+                        .Read(ac => ac.Action("Organizations_Read", "Organizations"))
+                        .Create(ac => ac.Action("Organizations_Create", "Organizations"))
+                        .Update(ac => ac.Action("Organizations_Update", "Organizations"))
+                        .Destroy(ac => ac.Action("Organizations_Destroy", "Organizations"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.OrganizationID); model.Field(p => p.OrganizationID).Editable(false);
+				model.Field(p => p.OrganizationName);
+				model.Field(p => p.OrganizationEmail);
+				model.Field(p => p.OrganizationPhone);
+				model.Field(p => p.OrganizationAddress);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#grid")
+    .Filter("td:nth-child(5)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+
+    </div>
+            </td>
+
+            <td id="righttd" >
+                <div id="intSidepanel" class="intsidebar" >
+                    <div id="editForm" >
+                    @{Html.RenderPartial("OrganizationReadFormPartial");}
+                </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</body>

@@ -1,0 +1,256 @@
+﻿@using SAMS.Model
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+
+<script type="text/javascript">
+    function AssetDocumentgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true })
+            // Cancel the changes.
+            var grid = $("#AssetDocumentgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetDocumentgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors == null) || (e.type == "update" && e.response.Errors == null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 })
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetDocumentgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetDocumentgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetDocumentID;
+          $("#AssetDocumentID").val(id);
+        }
+    }
+
+
+
+
+    function AssetDocumentID() {
+        var _selId = $("#AssetDocumentID").val();
+        return {
+            AssetDocumentID: _selId
+        };
+    }
+
+    function SetAssetDocumentgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetDocumentgrid_edit_button").hide();
+            $("#AssetDocumentgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetDocumentgrid_add_button").hide();
+            $("#AssetDocumentgrid_cancel_button").show();
+            $("#AssetDocumentgrid_update_button").show();
+        }
+        else {
+            $("#AssetDocumentgrid_edit_button").show();
+            $("#AssetDocumentgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetDocumentgrid_add_button").show();
+            $("#AssetDocumentgrid_cancel_button").hide();
+            $("#AssetDocumentgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetDocumentgridrow() {
+        $("#AssetDocumentID").val('');
+        grid = $("#AssetDocumentgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetDocumentgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetDocumentgrid_edit_button").on("click", function (e) {
+            debugger;
+            e.preventDefault();
+            var grid = $("#AssetDocumentgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetDocumentgrid_edit(true);
+            }
+        });
+
+        $("#AssetDocumentgrid_add_button").on("click", function () {
+            AddAssetDocumentgridrow();
+        })
+
+        $("#AssetDocumentgrid_delete_button").on("click", function () {
+            grid = $("#AssetDocumentgrid").data("kendoGrid");
+            var sel = $("#AssetDocumentgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetDocumentgrid_edit(false);
+        })
+
+        $("#AssetDocumentgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetDocumentgrid").data("kendoGrid").saveChanges();
+            SetAssetDocumentgrid_edit(false);
+        })
+
+        $("#AssetDocumentgrid_cancel_button").on("click", function () {
+            $("#AssetDocumentgrid").data("kendoGrid").cancelChanges();
+            SetAssetDocumentgrid_edit(false);
+        })
+        SetAssetDocumentgrid_edit(false);
+
+        $("#AssetDocumentgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body >
+    <input type="hidden" name="AssetDocumentID" id="AssetDocumentID" />
+
+<div>
+        @{
+            int AssetDocumentPermission = (int)ViewData["AssetDocumentPermission"];
+        }
+
+        @(Html.Kendo().Grid<AssetDocumentModel>()
+                        .Name("AssetDocumentgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetDocumentPermission >2){           
+                                                     <div id="AssetDocumentgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetDocumentPermission >3){
+                                                    <div id="AssetDocumentgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetDocumentPermission ==5){
+                                                    <div id="AssetDocumentgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetDocumentgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetDocumentgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+                            columns.Bound(p => p.AssetDocumentFile).ClientTemplate("#:FileName#");
+				columns.Bound(p => p.DocumentTypeID).ClientTemplate("#:DocumentTypeName#");
+				columns.Bound(p => p.Deactivate);
+                          columns.Bound(p => p.AssetDocumentID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onAssetDocumentgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events => events
+                            .Error("AssetDocumentgriderror_error")
+                            .RequestEnd("AssetDocumentgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetDocuments_ReadByID", "Assets").Data("FunAssetID"))
+                        .Create(ac => ac.Action("AssetDocuments_Create", "AssetDocuments"))
+                        .Update(ac => ac.Action("AssetDocuments_Update", "AssetDocuments"))
+                        .Destroy(ac => ac.Action("AssetDocuments_Destroy", "AssetDocuments"))
+                        .Model(model =>
+                        {
+
+				model.Id(p => p.AssetDocumentID); model.Field(p => p.AssetDocumentID).Editable(false);
+				model.Field(p => p.AssetID);
+				model.Field(p => p.DocumentTypeID);
+				model.Field(p => p.DocumentFile);
+				model.Field(p => p.FileName);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.DocumentTypeName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetDocumentgrid")
+    .Filter("td:nth-child(4)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

@@ -1,0 +1,65 @@
+﻿@*@model Guid?
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("MeasurementUnitTypeID")
+        .DataTextField("UnitTypeName")
+        .BindTo((System.Collections.IEnumerable)ViewData["units"])
+)*@
+@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownUnits", @class = "dropdownUnits" })
+                .DataValueField("MeasurementUnitTypeID")
+                .Filter("contains")
+                .DataTextField("UnitTypeName")
+                .DataSource(ds => ds.Read(a => a.Action("GetUnitsList", "MeasurementUnitTypes"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="unit_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="addunitwindow"></div>
+<script>
+
+    var window = $("#addunitwindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownUnits = $("#dropdownUnits").data("kendoDropDownList");
+            if (dropdownUnits) {
+                dropdownUnits.dataSource.read();
+            }
+
+            var s_dropdownUnits = $("#s_dropdownUnits").data("kendoDropDownList");
+            if (s_dropdownUnits) {
+                s_dropdownUnits.dataSource.read();
+            }
+   
+        },
+        height: "600px",
+        modal: true,
+        title: "Units",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#unit_add_button").on("click", function () {
+        var dialog = $("#addunitwindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'MeasurementUnitTypesPartial' }
+        });
+        dialog.center().open();
+    })
+</script>

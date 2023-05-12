@@ -1,0 +1,253 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetCharacteristicgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetCharacteristicgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetCharacteristicgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetCharacteristicgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetCharacteristicgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetCharacteristicID;
+          $("#AssetCharacteristicID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetCharacteristicID() {
+        var _selId = $("#AssetCharacteristicID").val();
+        return {
+            assetcharacteristicid: _selId
+        };
+    }
+
+    function SetAssetCharacteristicgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetCharacteristicgrid_edit_button").hide();
+            $("#AssetCharacteristicgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetCharacteristicgrid_add_button").hide();
+            $("#AssetCharacteristicgrid_cancel_button").show();
+            $("#AssetCharacteristicgrid_update_button").show();
+        }
+        else {
+            $("#AssetCharacteristicgrid_edit_button").show();
+            $("#AssetCharacteristicgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetCharacteristicgrid_add_button").show();
+            $("#AssetCharacteristicgrid_cancel_button").hide();
+            $("#AssetCharacteristicgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetCharacteristicgridrow() {
+        $("#AssetCharacteristicID").val('');
+        grid = $("#AssetCharacteristicgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetCharacteristicgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetCharacteristicgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetCharacteristicgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetCharacteristicgrid_edit(true);
+            }
+        });
+
+        $("#AssetCharacteristicgrid_add_button").on("click", function () {
+            AddAssetCharacteristicgridrow();
+        });
+
+        $("#AssetCharacteristicgrid_delete_button").on("click", function () {
+            grid = $("#AssetCharacteristicgrid").data("kendoGrid");
+            var sel = $("#AssetCharacteristicgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetCharacteristicgrid_edit(false);
+        });
+
+        $("#AssetCharacteristicgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetCharacteristicgrid").data("kendoGrid").saveChanges();
+            SetAssetCharacteristicgrid_edit(false);
+        });
+
+        $("#AssetCharacteristicgrid_cancel_button").on("click", function () {
+            $("#AssetCharacteristicgrid").data("kendoGrid").cancelChanges();
+            SetAssetCharacteristicgrid_edit(false);
+        });
+        SetAssetCharacteristicgrid_edit(false);
+
+        $("#AssetCharacteristicgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetCharacteristicID" id="AssetCharacteristicID" />
+<div>
+        @{
+            int AssetCharacteristicPermission = (int)ViewData["AssetCharacteristicPermission"];
+        }
+        @(Html.Kendo().Grid<AssetCharacteristicModel>()
+                        .Name("AssetCharacteristicgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetCharacteristicPermission >2){           
+                                                     <div id="AssetCharacteristicgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCharacteristicPermission >3){
+                                                    <div id="AssetCharacteristicgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCharacteristicPermission ==5){
+                                                    <div id="AssetCharacteristicgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetCharacteristicgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetCharacteristicgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.CharacteristicID).ClientTemplate("#:CharacteristicName#");
+				                  columns.Bound(p => p.UnitTypeID).ClientTemplate("#:UnitTypeName#");
+				                  columns.Bound(p => p.CharacteristicValue);
+                          columns.Bound(p => p.AssetCharacteristicID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onAssetCharacteristicgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetCharacteristicgriderror_error")
+                            .RequestEnd("AssetCharacteristicgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetCharacteristicsMaps_ReadByID", "Assets").Data("FunAssetID"))
+                        .Create(ac => ac.Action("AssetCharacteristics_New", "AssetCharacteristics").Data("FunAssetID"))
+                        .Update(ac => ac.Action("AssetCharacteristics_Update", "AssetCharacteristics"))
+                        .Destroy(ac => ac.Action("AssetCharacteristics_Destroy", "AssetCharacteristics"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetCharacteristicID); model.Field(p => p.AssetCharacteristicID).Editable(false);
+				model.Field(p => p.CharacteristicID);
+				model.Field(p => p.AssetID);
+				model.Field(p => p.UnitTypeID);
+				model.Field(p => p.CharacteristicValue);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.CharacteristicName);
+				model.Field(p => p.UnitTypeName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetCharacteristicgrid")
+    .Filter("td:nth-child(4)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

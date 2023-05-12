@@ -1,0 +1,16 @@
+﻿@*@model SAMS.Model.PersonnelModel*@
+@model Guid?
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("PersonnelID")
+        .Filter("contains")
+        .DataTextField("PeronFullName")
+                    .DataSource(ds => ds.Read(a => a.Action("NotRegisteredPersons", "Users").Data("UserID"))
+    )
+        )
+@*@model Guid?
+    @(Html.Kendo().DropDownListFor(m => m)
+            .DataValueField("PersonnelID")
+            .DataTextField("PeronFullName")
+            .DataSource(ds => ds.Read(a => a.Action("NotRegisteredPersons", "Users"))
+    )
+            )*@

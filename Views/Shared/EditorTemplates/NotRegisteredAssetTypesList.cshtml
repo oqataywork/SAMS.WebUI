@@ -1,0 +1,9 @@
+﻿@model Guid?
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .DataValueField("AssetTypeID")
+    .Filter("contains")
+    .DataTextField("AssetTypeName")
+    .DataSource(ds => ds.Read(a => a.Action("NotRegisteredAssets", "Assets").Data("FunAssetID"))
+    )
+    )

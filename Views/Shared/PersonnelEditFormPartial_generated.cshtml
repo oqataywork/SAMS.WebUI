@@ -1,0 +1,227 @@
+﻿@using SAMS.Model;
+
+@model PersonnelModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+<div>
+
+    @using (Html.BeginForm("Personnels_Create_or_Update", "Personnels", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+    <fieldset>
+        <div hidden="hidden">
+            @Html.TextBoxFor(model => model.PersonnelID, new { @id = "idinput" })
+        </div>
+        <table>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PersonnelFirstName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.PersonnelFirstName)
+                                    @Html.ValidationMessageFor(model => model.PersonnelFirstName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PersonnelLastName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.PersonnelLastName)
+                                    @Html.ValidationMessageFor(model => model.PersonnelLastName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PersonnelMiddleName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.PersonnelMiddleName)
+                                    @Html.ValidationMessageFor(model => model.PersonnelMiddleName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DepartmentID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.DepartmentID)
+                                    @Html.ValidationMessageFor(model => model.DepartmentID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.CardID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.CardID)
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PositionID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.PositionID)
+                                    @Html.ValidationMessageFor(model => model.PositionID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PersonnelEmail)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.PersonnelEmail)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.PersonnelPhone)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.PersonnelPhone)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.DOB)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.DOB)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Gender)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Gender)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Deactivate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Deactivate)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Remarks)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Remarks)
+                    </div>
+                </td>
+            </tr>
+
+</table>
+
+    </fieldset>
+            }
+
+    </div>

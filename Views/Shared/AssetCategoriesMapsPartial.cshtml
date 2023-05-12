@@ -1,0 +1,240 @@
+﻿@using SAMS.Core.ViewModels
+
+@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/SamsStyles.css")" rel="stylesheet" type="text/css" />
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script src="~/Static/v1/js/jquery.validate.min.js"></script>
+
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<script src="~/Static/v1/Vendors/d3_mitch_tree/dist/js/d3-mitch-tree.min.js"></script>
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree.min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree-theme-default.min.css")" rel="stylesheet" type="text/css" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<script src="~/Static/v1/js/sweetalert2.min.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+</script>
+
+
+<body style="background-color: #00B9CE; ">
+    <input type="hidden" name="cat_id" id="cat_id" />
+
+            <div  style="min-width: 500px;">
+               
+                <div id="AssetCategoryAttributeMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryAttributeMapsPartial");}*@
+                    @Html.Partial("AssetCategoryAttributeMapsPartial")
+                </div>
+                <div id="AssetCategoryCharacteristicsMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryCharacteristicsMapsPartial");}*@
+                    @Html.Partial("AssetCategoryCharacteristicsMapsPartial")
+                </div>
+                <div id="AssetCategoryDefectMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryDefectMapsPartial");}*@
+                    @Html.Partial("AssetCategoryDefectMapsPartial")
+                </div>
+                <div id="AssetCategoryDocumentTypeMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryDocumentTypeMapsPartial");}*@
+                    @Html.Partial("AssetCategoryDocumentTypeMapsPartial")
+                </div>
+                <div id="AssetCategoryOperationIndicatorsMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryOperationIndicatorsMapsPartial");}*@
+                    @Html.Partial("AssetCategoryOperationIndicatorsMapsPartial")
+                </div>
+                <div id="AssetCategoryServiceIntervalsMapsPartial">
+                    @*@{Html.RenderPartial("AssetCategoryServiceIntervalsMapsPartial");}*@
+                    @Html.Partial("AssetCategoryServiceIntervalsMapsPartial")
+                </div>
+            </div>
+
+</body>
+
+
+<script>
+    var _AssetCategoryCharacteristicsMapsPartialIsExpanded=true;
+
+    function AssetCategoryCharacteristicsMapsPartialIsExpanded() {
+        return _AssetCategoryCharacteristicsMapsPartialIsExpanded;
+    }
+
+    var _AssetCategoryAttributeMapsPartialIsExpanded = false;
+
+    function AssetCategoryAttributeMapsPartialIsExpanded() {
+        return _AssetCategoryAttributeMapsPartialIsExpanded;
+    }
+
+    function onAssetCategoryAttributeMapsPartialExpand() {
+        //kendoConsole.log("Expand");
+        _AssetCategoryAttributeMapsPartialIsExpanded = true;
+        var assetCategoryAttributeMapgrid = $("#AssetCategoryAttributeMapgrid").getKendoGrid();
+        if (assetCategoryAttributeMapgrid)
+            assetCategoryAttributeMapgrid.dataSource.read();
+    };
+
+    function onAssetCategoryAttributeMapsPartialCollapse() {
+        //kendoConsole.log("Collapse");
+        _AssetCategoryAttributeMapsPartialIsExpanded = false;
+    };
+
+    function onAssetCategoryAttributeMapsPartialComplete() {
+        //kendoConsole.log("Complete");
+    };
+
+    function onAssetCategoryCharacteristicsMapsPartialExpand() {
+        _AssetCategoryCharacteristicsMapsPartialIsExpanded = true;
+        var assetCategoryCharacteristicsMapgrid = $("#AssetCategoryCharacteristicsMapgrid").getKendoGrid();
+        if (assetCategoryCharacteristicsMapgrid)
+            assetCategoryCharacteristicsMapgrid.dataSource.read();
+    };
+
+    function onAssetCategoryCharacteristicsMapsPartialCollapse() {
+        _AssetCategoryCharacteristicsMapsPartialIsExpanded =false;
+    };
+
+    function onAssetCategoryCharacteristicsMapsPartialComplete() {
+       
+    };
+
+    var _AssetCategoryDefectMapsPartialIsExpanded = false;
+
+    function AssetCategoryDefectMapsPartialIsExpanded() {
+        return _AssetCategoryDefectMapsPartialIsExpanded;
+    }
+
+    function onAssetCategoryDefectMapsPartialExpand() {
+        _AssetCategoryDefectMapsPartialIsExpanded = true;
+        var grid = $("#AssetCategoryDefectMapgrid").getKendoGrid();
+        if (grid)
+            grid.dataSource.read();
+    };
+
+    function onAssetCategoryDefectMapsPartialCollapse() {
+        _AssetCategoryDefectMapsPartialIsExpanded = false;
+    };
+
+    function onAssetCategoryDefectMapsPartialComplete() {
+       
+    };
+
+    var _AssetCategoryDocumentTypeMapsPartialIsExpanded = false;
+
+    function AssetCategoryDocumentTypeMapsPartialIsExpanded() {
+        return _AssetCategoryDocumentTypeMapsPartialIsExpanded;
+    }
+
+    function onAssetCategoryDocumentTypeMapsPartialExpand() {
+        _AssetCategoryDocumentTypeMapsPartialIsExpanded = true;
+        var grid = $("#AssetCategoryDocumentTypeMapgrid").getKendoGrid();
+        if (grid)
+            grid.dataSource.read();
+    };
+
+    function onAssetCategoryDocumentTypeMapsPartialCollapse() {
+        _AssetCategoryDocumentTypeMapsPartialIsExpanded = false;
+    };
+
+    function onAssetCategoryDocumentTypeMapsPartialComplete() {
+        
+    };
+
+    var _AssetCategoryOperationIndicatorsMapsPartialIsExpanded = false;
+
+    function AssetCategoryOperationIndicatorsMapsPartialIsExpanded() {
+        return _AssetCategoryOperationIndicatorsMapsPartialIsExpanded;
+    }
+
+    function onAssetCategoryOperationIndicatorsMapsPartialExpand() {
+        _AssetCategoryOperationIndicatorsMapsPartialIsExpanded = true;
+        var grid = $("#AssetCategoryOperationIndicatorsMapgrid").getKendoGrid();
+        if (grid)
+            grid.dataSource.read();
+    };
+
+    function onAssetCategoryOperationIndicatorsMapsPartialCollapse() {
+        _AssetCategoryOperationIndicatorsMapsPartialIsExpanded = false;
+    };
+
+    function onAssetCategoryOperationIndicatorsMapsPartialComplete() {
+        
+    };
+
+    var _AssetCategoryServiceIntervalsMapsPartialIsExpanded = false;
+
+    function AssetCategoryServiceIntervalsMapsPartialIsExpanded() {
+        return _AssetCategoryServiceIntervalsMapsPartialIsExpanded;
+    }
+
+    function onAssetCategoryServiceIntervalsMapsPartialExpand() {
+        _AssetCategoryServiceIntervalsMapsPartialIsExpanded = true;
+        var grid = $("#AssetCategoryServiceIntervalsMapgrid").getKendoGrid();
+        if (grid)
+            grid.dataSource.read();
+    };
+
+    function onAssetCategoryServiceIntervalsMapsPartialCollapse() {
+        _AssetCategoryServiceIntervalsMapsPartialIsExpanded = false;
+    };
+
+    function onAssetCategoryServiceIntervalsMapsPartialComplete() {
+        
+    };
+
+    $('#AssetCategoryAttributeMapsPartial').kendoExpansionPanel({
+        title: 'Attributes',
+        expanded: true,
+        collapse: onAssetCategoryAttributeMapsPartialCollapse,
+        complete: onAssetCategoryAttributeMapsPartialComplete,
+        expand: onAssetCategoryAttributeMapsPartialExpand
+    });
+
+    $('#AssetCategoryCharacteristicsMapsPartial').kendoExpansionPanel({
+        title: 'Characteristics',
+        expanded: false,
+        collapse: onAssetCategoryCharacteristicsMapsPartialCollapse,
+        complete: onAssetCategoryCharacteristicsMapsPartialComplete,
+        expand: onAssetCategoryCharacteristicsMapsPartialExpand
+    });
+
+    $('#AssetCategoryDefectMapsPartial').kendoExpansionPanel({
+        title: 'Defects',
+        expanded: false,
+        collapse: onAssetCategoryDefectMapsPartialCollapse,
+        complete: onAssetCategoryDefectMapsPartialComplete,
+        expand: onAssetCategoryDefectMapsPartialExpand
+    });
+
+    $('#AssetCategoryDocumentTypeMapsPartial').kendoExpansionPanel({
+        title: 'Document Types',
+        expanded: false,
+        collapse: onAssetCategoryDocumentTypeMapsPartialCollapse,
+        complete: onAssetCategoryDocumentTypeMapsPartialComplete,
+        expand: onAssetCategoryDocumentTypeMapsPartialExpand
+    });
+
+    $('#AssetCategoryOperationIndicatorsMapsPartial').kendoExpansionPanel({
+        title: 'Operational Indicators',
+        expanded: false,
+        collapse: onAssetCategoryOperationIndicatorsMapsPartialCollapse,
+        complete: onAssetCategoryOperationIndicatorsMapsPartialComplete,
+        expand: onAssetCategoryOperationIndicatorsMapsPartialExpand
+    });
+
+    $('#AssetCategoryServiceIntervalsMapsPartial').kendoExpansionPanel({
+        title: 'Service Intervals',
+        expanded: false,
+        collapse: onAssetCategoryServiceIntervalsMapsPartialCollapse,
+        complete: onAssetCategoryServiceIntervalsMapsPartialComplete,
+        expand: onAssetCategoryServiceIntervalsMapsPartialExpand
+    });
+
+</script>

@@ -1,0 +1,630 @@
+﻿@using SAMS.Model
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/x-kendo-template" id="tooltiptempl_100">
+    <div style='background-image: url(#:Image#); height: 100px; background-size: auto 100%; background-repeat: no-repeat;  background-position: center; margin-top: -20px;'></div>
+</script>
+
+<script id="photo-template" type="text/x-kendo-template">
+    <div class='employee-photo' style='background-image: url(#:Image#); height: 60px; background-size: auto 100%; background-repeat: no-repeat;  background-position: center; margin-top: -20px;'></div>
+</script>
+
+<script id="icon-template" type="text/x-kendo-template">
+   <div class='columnicon' style='background-image: url("../Images/photo.png")'></div>
+</script>
+
+<script id="rowTemplate" type="text/x-kendo-template">
+
+    <tr data-uid='#: data.model.uid #' role="row" class="treerow">
+    <td role="gridcell">
+    #for(var i = 0; i < (hasChildren ? level : (level + 1)); i++){#
+                <span class="k-icon k-i-none"></span>
+            #}#
+            #if(data.hasChildren){#
+                <span class="k-icon k-i-#=data.model.expanded? 'collapse' : 'expand'#"></span>
+            #}#
+       @*<div class='employee-photo'
+        style='background-image: url(@Url.Content("~/content/web/treelist/people")/#: data.model.EmployeeId #.jpg);'></div>*@
+       <span class='assettype-name'>#:data.model.AssetTypeName#</span>
+
+    </td>
+    <td role="gridcell">
+        <span class='unittype-name'>#:data.model.UnitTypeName#</span>
+    </td>
+    <td role="gridcell">
+            <span class='unit-value'>#:data.model.UnitValue#</span>
+    </td>
+    </tr>
+
+</script>
+
+<script id="altRowTemplate" type="text/x-kendo-template">
+    <tr data-uid='#: data.model.uid #' role="row" class="k-alt">
+    <td role="gridcell">
+    #for(var i = 0; i < (hasChildren ? level : (level + 1)); i++){#
+                <span class="k-icon k-i-none"></span>
+            #}#
+            #if(data.hasChildren){#
+                <span class="k-icon k-i-#=data.model.expanded? 'collapse' : 'expand'#"></span>
+            #}#
+       @*<div class='employee-photo'
+        style='background-image: url(@Url.Content("~/content/web/treelist/people")/#: data.model.EmployeeId #.jpg);'></div>*@
+       <span class='assettype-name'>#:data.model.AssetTypeName#</span>
+    </td>
+    <td role="gridcell">
+        <span class='unittype-name'>#:data.model.UnitTypeName#</span>
+    </td>
+    <td role="gridcell">
+         <span class='unit-value'>#:data.model.UnitValue#</span>
+    </td>
+    </tr>
+</script>
+
+<script type="text/x-kendo-template" id="toolbarTemplate">
+    <div class="toolbar">
+        <div id="AssetTypetree_edit_button" class="k-button-icontext  circleButton">
+            <a href="\\#">
+                <span class="inner"></span>
+                <i class='far fa-edit' style='font-size:18px'></i>
+            </a>
+        </div>
+        <div id="AssetTypetree_delete_button" class="k-button-icontext k-grid-delete circleButton">
+            <a href="\\#">
+                <span class="inner"></span>
+                <i class='far fa-trash-alt' style='font-size:18px'></i>
+            </a>
+        </div>
+    </div>
+
+</script>
+
+
+<script type="text/javascript">
+
+    function treerequest_start(e) {
+        //if (!IsSourceUpdated())
+        //    e.preventDefault();
+    }
+    function treerequest_end(e) {
+        SetIsSourceUpdated(false);
+    }
+
+    
+    var _isSourceUpdated = false;
+
+    function IsSourceUpdated() {
+        return _isSourceUpdated;
+    }
+
+    function SetIsSourceUpdated(a) {
+        _isSourceUpdated=a;
+    }
+
+    function onDragStart(arg) {
+
+        var v = document.getElementById("dropping_route");
+        var _clone = jQuery.extend({}, arg.source)
+        //_clone.MoreRoot = null;
+        //_clone.routeLevels = null;
+        //_clone.Thumbnail = null;
+        v.value = JSON.stringify(_clone);
+    }
+
+    function onDrop(arg) {
+        var model = arg.model;
+        arg.preventDefault();
+    }
+
+
+
+    function AssetTypeConstructID() {
+        debugger;
+        var assetTypeID = '@ViewData["AssetTypeID"]';
+        var issrcUpdated = IsSourceUpdated();
+        return {
+            AssetTypeID: assetTypeID,
+            isSourceUpdated: issrcUpdated
+        };
+    }
+
+
+    $(document).ready(function () {
+        //debugger;
+
+        //$("#flatlist").kendoTreeList({
+        //    hint: function (e) {
+
+        //        //return $("#flatlist").clone();
+        //    }
+        //    ,
+        //    drag: function (e) {
+        //        draggeditem = $("#flatlist").selected.clone();
+        //    }
+        //});
+
+
+        function initOpen(e) {
+
+        }
+
+        function dialogOpen(e) {
+
+        }
+
+        $("#flatlist").kendoTooltip({
+            filter: "td:nth-child(1)", // Select the th elements of the Grid.
+            position: "top",
+            width: 100,
+            height: 100,
+            content: function (e) {
+                var dataItem = $("#AssetTypegrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+                var template = kendo.template($("#tooltiptempl_100").html());
+                return template(dataItem);
+            }
+        }).data("kendoTooltip");
+    });
+
+    function onDataBound(arg) {
+        var treelist = $("#treelist").data("kendoTreeList");
+        var row = treelist.content.find("tr:visible").eq(0);
+
+        //if (row.has(".k-i-collapse").length) {
+        //    treelist.collapse(row);
+        //} else {
+            treelist.expand(row);
+        //}
+    }
+</script>
+
+<body>
+    <input type="hidden" name="asst_type_id" id="asst_type_id" />
+    <input type="hidden" name="droped_route" id="droped_route" />
+    <input type="hidden" name="dropping_route" id="dropping_route" />
+    <div id="dialog"></div>
+    <div id="dialogedit"></div>
+    @*@{
+            int AssetTypePermission = (int)ViewData["AssetTypePermission"];
+        }*@
+    <table>
+        <tr>
+            <td style="width: 60%">
+
+                @(Html.Kendo().TreeList<SAMS.Core.ViewModels.AssetTypeViewModel>()
+                        .Name("treelist")
+                        .Toolbar(toolbar =>
+                        {
+                            toolbar.Save();
+                            toolbar.Cancel();
+                        })
+                        .Columns(columns =>
+                        {
+                            columns.Add().Field(e => e.AssetTypeName).Width(220);
+                            columns.Add().Field(e => e.UnitValue);
+                            columns.Add().Field(e => e.UnitTypeName).Width(160);
+                        })
+                        .Editable(editable => editable.Move(true))
+                        .Filterable()
+                        .Selectable(true)
+                            .RowTemplateId("rowTemplate")
+                        .AltRowTemplateId("altRowTemplate")
+                        .DataSource(dataSource => dataSource
+                            .Read(read => read.Action("GetTree", "AssetTypes").Data("AssetTypeConstructID"))
+                            .ServerOperation(false)
+                            .Events(events => events
+                               .RequestStart("treerequest_start")
+                                .RequestEnd("treerequest_end")
+                            )
+                            .Model(m => {
+                                m.Id(f => f.ID);
+                                m.ParentId(f => f.ParentID);
+                                m.Field(f => f.AssetTypeName);
+                                m.Field(f => f.UnitTypeName);
+                                m.Field(f => f.UnitValue);
+                                m.Field(f => f.UnitTypeID);
+                                ;
+                            })
+                        )
+                        .Events(events =>
+                        {
+                            events.DataBound("onDataBound");
+                        })
+                        //.Events(events =>
+                        //{
+                        //    events.Drop("onTargetDrop");
+                        //})
+                        .Height(400)
+                        .HtmlAttributes(new { style = "height:100%; vertical-align: top; margin: 5px" })
+                    )
+            </td>
+
+            <td style="width: 40%">
+                @(Html.Kendo().TreeList<AssetTypeModel>()
+                .Name("flatlist")
+                .Columns(columns =>
+                {
+                    columns.Add().Field(e => e.AssetTypeName).Width(50).TemplateId("icon-template").Title(" ");
+                    columns.Add().Field(e => e.AssetTypeName).Width(100);
+                })
+                .Editable(editable => editable.Move(true))
+                .Filterable()
+                .Selectable(true)
+                .DataSource(dataSource => dataSource
+                    .Read(read => read.Action("All", "AssetTypes"))
+                    .ServerOperation(false)
+                    .Model(m =>
+                    {
+                        m.Id(f => f.IDStr);
+                        m.ParentId(f => f.DummyParentID);
+                        m.Field(f => f.AssetTypeName);
+                    })
+
+                )
+                .Events(events =>
+                {
+                    events.DragStart("onDragStart");
+                    events.Drop("onDrop");
+                })
+                .Height(400)
+                .HtmlAttributes(new { style = "height:100%; vertical-align: top; margin: 5px" })
+                )
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id='draggedname' style='height: 20px; display: none;' disabled />
+            </td>
+            <td>
+                <input id='draggedid' style='height: 20px; display: none;' />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id='droppedname' style='height: 20px; display: none;' disabled />
+            </td>
+            <td>
+                <input id='droppedid' style='height: 20px; display: none;' />
+                <input id='droppedrootid' style='height: 20px; display: none;' />
+
+            </td>
+        </tr>
+    </table>
+</body>
+<script>
+    $(document).ajaxSend(function (event, jqXHR, ajaxOptions) {
+        console.log(ajaxOptions.url);
+        if (ajaxOptions.url == "Path/To/GridReadAction") {
+            window._gridXHR = jqXHR;
+        }
+    });
+
+    function dragend(e) {
+        debugger;
+        /* The result can be observed in the DevTools(F12) console of the browser. */
+        console.log("drag ended");
+    }
+    debugger;
+    var treeList = $("#treelist").data("kendoTreeList");
+    //treeList.bind("dragend", dragend);
+    treeList.setOptions({
+        toolbar: kendo.template($("#toolbarTemplate").html())
+    });
+
+     $("#treelist").kendoDropTarget({
+            //mouseEnter: function (e) {
+            //    debugger;
+            //    e.item.IsSelected = true;
+            //    var v = document.getElementById("droped_route");
+            //    droppednode = e.item;
+            //}
+            //,
+            //mouseLeave: function (e) {
+            //    e.item.IsSelected = false;
+            //    var v = document.getElementById("droped_route");
+            //    v.value = "";
+            //},
+            drop: function (e) {
+
+                var treelist1 = $("#flatlist").data("kendoTreeList");
+                var treelist2 = $("#treelist").data("kendoTreeList");
+
+                //var v = document.getElementById("dropping_route");
+                //var v2 = document.getElementById("droped_route");
+                //draggeditem = $("#flatlist").select().clone();
+                //var sel = $("#flatlist").select();
+                //var draggedRow = $("#flatlist").data("kendoTreeList").dataItem(sel);
+                //var droppedRow = e.source;//$("#treelist").data("kendoTreeList").dataItem(e.dropTarget);
+                //var draggeddata = JSON.parse(v.value);
+                //var _dropclone = jQuery.extend({}, e.dropTarget.source)
+                //v2.value = JSON.stringify(_dropclone);
+
+
+             var draggedItem = treelist1.dataSource.getByUid($(e.draggable.currentTarget)[0].dataset.uid);
+             var dropeditem = treelist2.dataSource.getByUid($(e.target).parent()[0].closest("tr").dataset.uid);
+                var fromdragged = 0;//1 from falt, 2 from self
+                if (!dropeditem)
+                 return;
+
+             document.getElementById("draggedname").value = draggedItem.AssetTypeName;
+             document.getElementById("draggedid").value = draggedItem.AssetTypeID;
+
+             document.getElementById("droppedname").value = dropeditem.AssetTypeName;
+             document.getElementById("droppedid").value = dropeditem.AssetTypeID;
+             document.getElementById("droppedrootid").value = dropeditem.RootAssetTypeID;
+             
+
+                //if (draggedItem) {
+                //    fromdragged=1;
+                //}
+                //else {
+                //    draggedItem = treelist2.dataSource.getByUid($(e.draggable.currentTarget).data("uid"));
+                //    if (draggedItem) {
+                //        fromdragged=2;
+                //    }
+                //}
+
+             if (draggedItem.AssetTypeID === dropeditem.AssetTypeID) {
+                 Swal.fire({ icon: 'error', text: "Avadanlıq özünə tabe ola bilməz.", showConfirmButton: false, timer: 1500 });
+                 return;
+             }
+
+                var dialog = $("#dialog").kendoDialog({
+                    width: "400px",
+                    visible: false,
+                    title: "Units",
+                    closable: true,
+                    modal: false,
+                    content: "<input id='unitval'/>" +
+                        "<div id='unitslist'></div>" ,
+                    actions: [
+                        { text: 'Cancel' },
+                        { text: 'OK', primary: true, action: actionOK }
+                    ],
+                    initOpen: onInitOpen,
+                    open: onOpen,
+                    close: onClose,
+                    show: onShow,
+                    hide: onHide
+                });
+
+             function onInitOpen(e) {
+                 debugger;
+                    if (draggedItem.SingleInstance) {
+                        document.getElementById("unitval").value = 1;
+                        document.getElementById("unitval").setAttribute('disabled', '');
+                    }
+                    else {
+                        document.getElementById("unitval").value = 1;
+                        document.getElementById("unitval").removeAttribute('disabled');
+                    }
+                }
+
+                function onOpen(e) {
+                    
+                }
+
+                function onShow(e) {
+                    
+                }
+
+                function onHide(e) {
+                    
+                }
+
+                function onClose(e) {
+                    
+                }
+                function onCancel(e) {
+                    
+                }
+
+                function onOK(e) {
+                    
+                }
+
+
+
+                $("#unitslist").kendoDropDownList({
+                    dataTextField: "UnitTypeName",
+                    dataValueField: "MeasurementUnitTypeID",
+                    dataSource: {
+                        serverFiltering: true,
+                            transport: {
+                                read: {
+                                    url: '@(Url.Action("GetUnitsList", "MeasurementUnitTypes"))',
+                                    dataType: 'json',
+                                    contentType:'application/json; charset=utf-8',
+                                }
+                           }
+
+                      }
+                });
+
+                function actionOK(e) {
+                    var unitslist = $("#unitslist").data("kendoDropDownList");
+                    var selunit = $("#unitslist").data("kendoDropDownList").value();
+                    var unitval = document.getElementById("unitval").value;
+                    //
+                    //if (fromdragged !== 0) {
+                    //    let responseData = $.ajax({
+                    //    type: "POST",
+                    //    url: "/AssetTypes/AddNewAssetTypeRelation",
+                    //    data: { assetTypeID: dropeditem.AssetTypeID, childAssetTypeID: draggedItem.AssetTypeID, unitTypeID: selunit, unitValue: unitval.value, rootAssetTypeID: dropeditem.RootAssetTypeID},
+                    //    async: false
+                    //    }).responseJSON;
+                    //    if (responseData != null) {
+                    //        Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+
+                    //        setTimeout(function() {
+                    //                SetIsSourceUpdated(true);
+                    //                $("#treelist").data("kendoTreeList").dataSource.read();
+                    //            },
+                    //            2000);
+
+                    //    } else {
+
+                    //    }
+                    //}
+
+                    var dropeditemid= document.getElementById("droppedid").value;
+                    var rootAssetTypeID=document.getElementById("droppedrootid").value;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/AssetTypes/AddNewAssetTypeRelation",
+                        data: { assetTypeID: dropeditemid, childAssetTypeID: document.getElementById("draggedid").value, unitTypeID: selunit, unitValue: unitval, rootAssetTypeID: rootAssetTypeID },
+                        async: false,
+                        beforeSend: function () {
+
+                        },
+                        success: function (res) {
+                            if (res.Errors) {
+                                Swal.fire({ icon: 'error', text: res.Errors.exception.errors, showConfirmButton: true });
+                            }
+                            else {
+                                if (res.success) {
+                                    Swal.fire({ icon: 'success', text: res.responseText, showConfirmButton: false, timer: 1500 });
+                                    SetIsSourceUpdated(true);
+                                    $("#treelist").data("kendoTreeList").dataSource.read();
+                                } else {
+                                    Swal.fire({ icon: 'error', text: res.responseText, showConfirmButton: true });
+                                }
+                            }
+                        },
+                        error: function (error) {
+                            kendo.ui.progress($(document.body), false);
+                            Swal.fire({ type: 'error', text: "Xəta baş verdi. Zəhmət olmasa, səhifəni yeniləyin.", showConfirmButton: true, confirmButtonText: 'Bağla', allowOutsideClick: false });
+                        }
+                    });
+
+             }
+
+                $("#dialog").data("kendoDialog").open();
+            }
+
+        });
+
+    //
+    $("#AssetTypetree_delete_button").on("click", function (e) {
+
+        debugger;
+        var treeList = $("#treelist").data("kendoTreeList");
+        var selectedrow = treeList.select()[0];
+        if (selectedrow) {
+
+            Swal.fire({
+                title: 'Do you want to delete selected?',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Delete',
+                denyButtonText: `Don't delete`,
+            }).then((result) => {
+                /* Read more about isConfirmed, isDenied below */
+                if (result.isConfirmed) {
+                    var dataItem = treeList.dataItem(selectedrow);
+                    let responseData = $.ajax({
+                        type: "POST",
+                        url: "/AssetTypes/DeleteAssetTypeRelation",
+                        data: { assetTypeRelationID: dataItem.AssetTypeRelationID },
+                        async: false
+                    }).responseJSON;
+                    if (responseData != null) {
+                        SetIsSourceUpdated(true);
+                        $("#treelist").data("kendoTreeList").dataSource.read();
+                    }
+                } else if (result.isDenied) {
+                    return;
+                }
+            })
+        }
+    });
+
+    $("#AssetTypetree_edit_button").on("click", function (e) {
+        debugger;
+        e.preventDefault();
+        var treeList = $("#treelist").data("kendoTreeList");
+        var selectedrow = treeList.select()[0];
+        if (selectedrow) {
+            var dataItem = treeList.dataItem(selectedrow);
+            //treeList.editRow(selectedrow);
+            //Setgrid_edit(true);
+            @*var dataItem = grid.dataItem(selectedrow);
+                var id = dataItem.DepartmentID;
+                $("#editForm").load('@(Url.Action("GetDepartmentEditForm", "Departments", null, Request.Url.Scheme))?id=' + id, function () {
+                    Setgrid_edit(true);
+                });*@
+
+              var dialog = $("#dialogedit").kendoDialog({
+                    width: "400px",
+                    visible: false,
+                    title: "Units",
+                    closable: true,
+                    modal: false,
+                  content: "<input id='unitvaled' value='" + dataItem.UnitValue + "' </input>" +
+                        "<div id='unitslisted'></div>",
+                    actions: [
+                        { text: 'Cancel' },
+                        { text: 'OK', primary: true, action: actionEditOK }
+                  ],
+                  initOpen: onInitEditOpen,
+                });
+
+            function onInitEditOpen(e) {
+                if (dataItem.SingleInstance) {
+                    document.getElementById("unitvaled").value = 1;
+                    document.getElementById("unitvaled").setAttribute('disabled', '');
+                }
+                else {
+                    document.getElementById("unitvaled").removeAttribute('disabled');
+                }
+            }
+
+                $("#unitslisted").kendoDropDownList({
+                    dataTextField: "UnitTypeName",
+                    dataValueField: "MeasurementUnitTypeID",
+                    dataSource: {
+                        serverFiltering: true,
+                            transport: {
+                                read: {
+                                    url: '@(Url.Action("GetUnitsList", "MeasurementUnitTypes"))',
+                                    dataType: 'json',
+                                    contentType:'application/json; charset=utf-8',
+                                }
+                           }
+
+                      }
+                });
+
+            var dropdownlist = $("#unitslisted").data("kendoDropDownList");
+            dropdownlist.value(dataItem.UnitTypeID);
+
+            function actionEditOK(e) {
+                debugger;
+                    var unitslist = $("#unitslisted").data("kendoDropDownList");
+                    var selunit = $("#unitslisted").data("kendoDropDownList").value();
+                    var unitval = document.getElementById("unitvaled");;
+
+                    //if (fromdragged !== 0) {
+                        alert(selunit + ' ' + unitval.value);
+
+                        let responseData = $.ajax({
+                        type: "POST",
+                            url: "/AssetTypes/UpdateAssetTypeRelation",
+                            data: { assetTypeRelationID: dataItem.AssetTypeRelationID, unitTypeID: selunit, unitValue: unitval.value},
+                        async: false
+                        }).responseJSON;
+                        if (responseData != null)
+                        {
+                            SetIsSourceUpdated(true);
+                            $("#treelist").data("kendoTreeList").dataSource.read();
+                        }
+                    //}
+                }
+
+
+                $("#dialogedit").data("kendoDialog").open();
+        }
+    });
+</script>

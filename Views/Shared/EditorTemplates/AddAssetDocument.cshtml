@@ -1,0 +1,179 @@
+﻿@model SAMS.Core.Models.AssetDocumentFileModel
+@*@using (Html.BeginForm("UploadAssetDocument", "Upload", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div>
+            @Html.TextBox("file", "", new { type = "file" }) <br />
+            <input type="submit" value="Upload" />
+            @ViewBag.Message
+        </div>
+    }*@
+
+<script>
+    function myFunction() {
+        debugger;
+        var form = $("#formId");
+        var url = form.attr('action');
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: form.serialize(),
+            success: function(data) {
+                
+                // Ajax call completed successfully
+                alert("Form Submited Successfully");
+            },
+            error: function(data) {
+                      
+                // Some error in ajax call
+                alert("some Error");
+            }
+        });
+    }
+
+    function uploadFile(e) {
+        var form = $("#formId");
+        var files = $("#ImageFile")[0].files;// e.target.files;
+        var AssetDocumentID = $("#AssetDocumentID").val();
+        //var myID = 3; //uncomment this to make sure the ajax URL works
+        var filename;
+        if (files.length > 0) {
+            if (window.FormData !== undefined) {
+                var data = new FormData();
+                for (var x = 0; x < files.length; x++) {
+                    filename = files[x].name;
+                    data.append(filename , files[x]);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Upload/UploadFile?id=' + AssetDocumentID,
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function(result) {
+                        Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+                        $("#FileName").val(filename);
+                    },
+                    error: function (xhr, status, p3, p4){
+                        var err = "Error " + " " + status + " " + p3 + " " + p4;
+                        if (xhr.responseText && xhr.responseText[0] == "{")
+                            err = JSON.parse(xhr.responseText).Message;
+                        Swal.fire({ icon: 'error', text: err, showConfirmButton: true });
+                    }
+                });
+            } else {
+                alert("This browser doesn't support HTML5 file uploads!");
+            }
+        }
+    }
+</script>
+
+<style>
+    .custom-file-upload {
+        border: 1px solid #ccc;
+        display: inline-block;
+        padding: 6px 12px;
+        cursor: pointer;
+    }
+</style>
+
+@using (Html.BeginForm("UploadAssetDocument", "Upload", FormMethod.Post, new { enctype = "multipart/form-data", id= "formId" }))
+{
+    <table>
+        <tr>
+            <td style="width: 60%">
+                <input  name="AssetDocumentID" type="hidden" />
+                <input  name="FileName" id="FileName"  readonly/>
+            </td>
+            <td style="width: 20%">
+                <div>
+                    @*<label for="ImageFile" class="k-button-icontext circleButton">Fayl seçimi</label>
+                    <input type="file" name="ImageFile" id="ImageFile" style="visibility:hidden;" />*@
+                    
+                    <div id="btnUpload" class="k-button-icontext circleButton">
+                        <a href="#">
+                            <span class="inner"></span>
+                            @*<i class='far fa-plus-square' style='font-size:18px'></i>*@
+                            <label for="ImageFile">
+                                <i class="far fa-plus-square" style='font-size:18px'></i> 
+                            </label>
+                            <input id="ImageFile" type="file" style="visibility:hidden;"/>
+                        </a>
+                    </div>
+
+                    @*<label for="ImageFile" class="k-button-icontext circleButton">
+                        <i class="far fa-plus-square"></i> 
+                    </label>
+                    <input id="ImageFile" type="file" style="visibility:hidden;"/>*@
+
+                    @*<div id="btnUpload" class="k-button-icontext circleButton">
+                        <a href="#">
+                            <span class="inner"></span>
+                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                        </a>
+                    </div>*@
+                </div>
+            </td>
+            <td style="width: 20%">
+                <div id="btnSave" class="k-button-icontext circleButton">
+                    <a href="#">
+                        <span class="inner"></span>
+                        <i class='far fa-check-circle' style='font-size:18px'></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    @*<div class="form-horizontal">
+
+    </div>
+
+        <div class="form-group">
+
+        </div>
+
+        <div class="form-group">
+            <button type="button" onclick="uploadFile()">Yaddaşa</button>
+        </div>*@
+}
+<script>
+    $("#btnSave").on("click", function (e) {
+        var form = $("#formId");
+        var files = $("#ImageFile")[0].files;// e.target.files;
+        var AssetDocumentID = $("#AssetDocumentID").val();
+        //var myID = 3; //uncomment this to make sure the ajax URL works
+        var filename;
+        if (files.length > 0) {
+            if (window.FormData !== undefined) {
+                var data = new FormData();
+                for (var x = 0; x < files.length; x++) {
+                    filename = files[x].name;
+                    data.append(filename , files[x]);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: '/Upload/UploadFile?id=' + AssetDocumentID,
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function(result) {
+                        Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+                        $("#FileName").val(filename);
+                        $("#AssetDocumentgrid").data("kendoGrid").dataSource.read();
+                        SetAssetDocumentgrid_edit(false);
+                    },
+                    error: function (xhr, status, p3, p4){
+                        var err = "Error " + " " + status + " " + p3 + " " + p4;
+                        if (xhr.responseText && xhr.responseText[0] == "{")
+                            err = JSON.parse(xhr.responseText).Message;
+                        Swal.fire({ icon: 'error', text: err, showConfirmButton: true });
+                    }
+                });
+            } else {
+                alert("This browser doesn't support HTML5 file uploads!");
+            }
+        }
+    });
+</script>

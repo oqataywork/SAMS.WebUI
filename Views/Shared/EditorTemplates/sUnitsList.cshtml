@@ -1,0 +1,10 @@
+﻿@model Guid?
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "s_dropdownUnits", @class = "s_dropdownUnits" })
+                .DataValueField("MeasurementUnitTypeID")
+                .Filter("contains")
+                .DataTextField("UnitTypeName")
+                .DataSource(ds => ds.Read(a => a.Action("GetUnitsList", "MeasurementUnitTypes"))
+                )
+                )

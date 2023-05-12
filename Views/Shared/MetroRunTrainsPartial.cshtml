@@ -1,0 +1,40 @@
+﻿@using SAMS.Core.ViewModels
+
+@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/SamsStyles.css")" rel="stylesheet" type="text/css" />
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script src="~/Static/v1/js/jquery.validate.min.js"></script>
+
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<script src="~/Static/v1/Vendors/d3_mitch_tree/dist/js/d3-mitch-tree.min.js"></script>
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree.min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree-theme-default.min.css")" rel="stylesheet" type="text/css" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<script src="~/Static/v1/js/sweetalert2.min.js"></script>
+
+<script type="text/javascript">
+    function customResize() {
+        //your code
+        //alert('page resized');
+    }
+
+    //function onLoad() {
+    //    window.onresize = customResize;
+    //}
+
+    $(document).ready(function () {
+        debugger;
+        window.onresize = customResize;
+    });
+
+
+</script>
+
+<div id="trainframediv"  style="width: 100%">
+    <iframe src="@ViewData["TrainClassesPartial"].ToString()" width="100%" height="800px"></iframe>
+</div>

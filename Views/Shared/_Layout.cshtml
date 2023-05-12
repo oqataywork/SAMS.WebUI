@@ -1,0 +1,188 @@
+﻿<!DOCTYPE html>
+@*<style>
+    .mybody {
+        background-image: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('images/bkg.png');
+        background-repeat: no-repeat;
+        background-size: 100% auto;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        position: absolute;
+        z-index: -1;
+    }
+</style>*@
+<html>
+<head>
+    @*<link type="image/x-icon" href="~/favicon-progress.ico" rel="shortcut icon">*@
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SAMS</title>
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <!--This bundle was moved by the Telerik VS Extensions for compatibility reasons-->
+    @Scripts.Render("~/bundles/jquery")
+    <link href="@Url.Content("~/Content/kendo/2022.3.1109/kendo.classic-silver.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2022.3.1109/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2022.3.1109/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2022.3.1109/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2022.3.1109/kendo.aspnetmvc.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+
+    <script src="~/Scripts/jquery.signalR-2.4.3.min.js"></script>
+    <script src="@Url.Content("~/signalr/hubs")"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.0.3/js.cookie.min.js"></script>
+    <link href="@Url.Content("~/Content/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Static/v1/css/sweetalert2.css")" rel="stylesheet" type="text/css" />
+
+
+    @RenderSection("PageStyles", false)
+    @RenderSection("PageStylesPartial", false)
+
+</head>
+
+
+<header class="main-header">
+    @{Html.RenderAction("PartialMainMenu", "Shared");}
+</header>
+<body>
+
+    @*<div id="BaseUrl" data-baseurl="@Context.Request.Url.GetLeftPart(UriPartial.Authority)@Url.Content("~/")"></div>*@
+    @Scripts.Render("~/Scripts/layout.js")
+
+    <script id="button-template" type="text/x-kendo-template">
+    </script>
+    <script id="tooltip-template" type="text/x-kendo-template">
+        @(Html.Kendo().Button()
+            .Name("signInButton")
+            .HtmlAttributes(new { @class = "k-primary" })
+            .Content("Sign Out")
+            .Events(ev => ev.Click("onClick"))
+            .ToClientTemplate()
+        )
+    </script>
+ 
+    <content class="main-content mybody">
+        <style>
+
+            .rotate {
+                animation: rotation 2s infinite linear;
+            }
+
+            @@keyframes rotation {
+                from {
+                    transform: translate(946.276489px,215.573997px) rotate(0deg);
+                }
+
+                to {
+                    transform: translate(946.276489px,215.573997px) rotate(359deg);
+                }
+            }
+
+            #sams_logo2 {
+                opacity: 0.5;
+                height: 550px;
+                display: block;
+                margin-left: auto;
+            }
+        </style>
+        <script>
+            function RunGear() {
+                var gearpath = document.getElementById("gearpath");
+                gearpath.classList.add("rotate");
+            }
+
+            function StopGear() {
+                var gearpath = document.getElementById("gearpath");
+                gearpath.classList.remove("rotate");
+            }
+
+            $(document).ajaxStart(function () {
+                let ms = new Date(Date.now()).toLocaleString('ru-RU');
+                console.log("ajax request at " + ms);
+                RunGear();
+            });
+            $(document).ajaxComplete(function () {
+                StopGear();
+            });
+
+
+        </script>
+
+        @Html.Raw(File.ReadAllText(Server.MapPath("/images/SAMS_logo_css.svg")))
+        @RenderBody()
+
+    </content>
+</body>
+</html>
+<script>
+    var hub = null;
+
+    function ConnectToHub() {
+
+        var userGuid = '@ViewData["currentuserguid"]';//$("#userGuid").val();
+        var connectionresult = hub.server.connect( userGuid);
+        //if (connectionresult)
+            //hub.server.setQueuesPivotStatistics(operatorDeskGuid, userGuid);
+        return connectionresult;
+    }
+
+    function StartHub() {
+        hub = $.connection.samsHub;
+        $.connection.hub.start().done(function () {
+            if (ConnectToHub()) {
+                //alert("connected");
+            }
+        }).fail(function (reason) {
+            console.log("SignalR connection failed: " + reason);
+        });
+    }
+
+    function DeclareHubMethodsAndStartHub() {
+        StartHub();
+        //$.connection.hub.stateChanged(connectionStateChanged);
+        $.connection.hub.disconnected(function () {
+            setTimeout(function () {
+                StartHub();
+            }, 5000); // Restart connection after 5 seconds.
+        });
+        $.connection.hub.connectionSlow(function () {
+            console.log('Şəbəkədə xəta var.');
+        });
+        $.connection.hub.reconnecting(function() {
+            //ConnectOperatorToHub();
+        });
+
+        //hub.client.Reconnecting = async function (currentOperatorStatusAndQueue) {
+
+        //    var operatorStatus = parseInt(currentOperatorStatusAndQueue.OperatorCurrentStatus);
+        //    var queue = currentOperatorStatusAndQueue.queueViewModel;
+        //}
+
+        //hub.client.NewQueue = function (sectorGuid, queueGuid, operatorDeskGuid) {
+        //    var currentOperatorDeskGuid = $('#operatorDeskGuid').val();
+        //    GetNextQueue(sectorGuid, queueGuid, currentOperatorDeskGuid);
+        //}
+
+        @*hub.client.CallPivotStatistics = function () {
+            var operatorDeskGuid = $('#operatorDeskGuid').val();
+            var userGuid = @ViewData["currentuserguid"];//$("#userGuid").val();
+            hub.server.setQueuesPivotStatistics(operatorDeskGuid, userGuid);
+        }*@
+
+        hub.client.Alert = function (message) {
+            Swal.fire({ type: 'error', text: message, showConfirmButton: true, allowOutsideClick: false });
+        }
+    }
+
+
+    $(document).ready(function () {
+        DeclareHubMethodsAndStartHub();
+    });
+
+
+</script>

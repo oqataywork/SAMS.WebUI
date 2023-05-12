@@ -1,0 +1,252 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetCategoryDefectMapgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetCategoryDefectMapgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetCategoryDefectMapgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetCategoryDefectMapgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetCategoryDefectMapgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetCategoryDefectMapID;
+          $("#AssetCategoryDefectMapID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetCategoryDefectMapID() {
+        var _selId = $("#AssetCategoryDefectMapID").val();
+        return {
+            assetcategorydefectmapid: _selId
+        };
+    }
+
+    function SetAssetCategoryDefectMapgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetCategoryDefectMapgrid_edit_button").hide();
+            $("#AssetCategoryDefectMapgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetCategoryDefectMapgrid_add_button").hide();
+            $("#AssetCategoryDefectMapgrid_cancel_button").show();
+            $("#AssetCategoryDefectMapgrid_update_button").show();
+        }
+        else {
+            $("#AssetCategoryDefectMapgrid_edit_button").show();
+            $("#AssetCategoryDefectMapgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetCategoryDefectMapgrid_add_button").show();
+            $("#AssetCategoryDefectMapgrid_cancel_button").hide();
+            $("#AssetCategoryDefectMapgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetCategoryDefectMapgridrow() {
+        $("#AssetCategoryDefectMapID").val('');
+        grid = $("#AssetCategoryDefectMapgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetCategoryDefectMapgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetCategoryDefectMapgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetCategoryDefectMapgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetCategoryDefectMapgrid_edit(true);
+            }
+        });
+
+        $("#AssetCategoryDefectMapgrid_add_button").on("click", function () {
+            AddAssetCategoryDefectMapgridrow();
+        });
+
+        $("#AssetCategoryDefectMapgrid_delete_button").on("click", function () {
+            grid = $("#AssetCategoryDefectMapgrid").data("kendoGrid");
+            var sel = $("#AssetCategoryDefectMapgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetCategoryDefectMapgrid_edit(false);
+        });
+
+        $("#AssetCategoryDefectMapgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetCategoryDefectMapgrid").data("kendoGrid").saveChanges();
+            SetAssetCategoryDefectMapgrid_edit(false);
+        });
+
+        $("#AssetCategoryDefectMapgrid_cancel_button").on("click", function () {
+            $("#AssetCategoryDefectMapgrid").data("kendoGrid").cancelChanges();
+            SetAssetCategoryDefectMapgrid_edit(false);
+        });
+        SetAssetCategoryDefectMapgrid_edit(false);
+
+        $("#AssetCategoryDefectMapgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetCategoryDefectMapID" id="AssetCategoryDefectMapID" />
+<div>
+        @{
+            int AssetCategoryDefectMapPermission = (int)ViewData["AssetCategoryDefectMapPermission"];
+        }
+        @(Html.Kendo().Grid<AssetCategoryDefectMapModel>()
+                        .Name("AssetCategoryDefectMapgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetCategoryDefectMapPermission >2){           
+                                                     <div id="AssetCategoryDefectMapgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCategoryDefectMapPermission >3){
+                                                    <div id="AssetCategoryDefectMapgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetCategoryDefectMapPermission ==5){
+                                                    <div id="AssetCategoryDefectMapgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetCategoryDefectMapgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetCategoryDefectMapgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.DefectTypeID).ClientTemplate("#:DefectTypeName#");
+				                  columns.Bound(p => p.DefAssetCategoryID).ClientTemplate("#:AssetCategoryName#").Title("Category");
+				                  columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+                          columns.Bound(p => p.AssetCategoryDefectMapID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(300))
+                        .Events(ev => ev
+                            .Change("onAssetCategoryDefectMapgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetCategoryDefectMapgriderror_error")
+                            .RequestEnd("AssetCategoryDefectMapgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetCategoryDefectMaps_ReadByID", "AssetCategories").Data("CurrentID"))
+                        .Create(ac => ac.Action("AssetCategoryDefectMaps_Create", "AssetCategoryDefectMaps"))
+                        .Update(ac => ac.Action("AssetCategoryDefectMaps_Update", "AssetCategoryDefectMaps"))
+                        .Destroy(ac => ac.Action("AssetCategoryDefectMaps_Destroy", "AssetCategoryDefectMaps"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetCategoryDefectMapID); model.Field(p => p.AssetCategoryDefectMapID).Editable(false);
+				model.Field(p => p.DefAssetCategoryID);
+				model.Field(p => p.DefectTypeID);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy).Editable(false);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.DefectTypeName).Editable(false);
+				model.Field(p => p.AssetCategoryName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetCategoryDefectMapgrid")
+    .Filter("td:nth-child(4)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

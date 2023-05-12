@@ -1,0 +1,7 @@
+﻿@model int?
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("Key")
+        .DataTextField("Value")
+        .ValuePrimitive(true)
+        .BindTo((System.Collections.IEnumerable)ViewData["asset_attribute_type_enumslist"])
+)

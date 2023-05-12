@@ -1,0 +1,85 @@
+﻿@*@using SAMS.WebUI.Models
+
+    @model List<MainMenu>
+    @{
+        Layout = null;
+    }
+
+    <link href="@Url.Content("~/Static/v1/css/sidemenupanel.css")" rel="stylesheet" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script>
+        $("#dmenu").kendoMenu({
+            select: function (e) {
+                $(".k-state-selected", this.element).removeClass("k-state-selected");
+                $(e.item).addClass("k-state-selected")
+                openDirectory(e.item.id);
+
+            }
+        });
+
+        function openDirectory(directory) {
+            $("#mainbodydiv").load('@(Url.Action("GetPartialView", "Admin", null, Request.Url.Scheme))?directory=' + directory);
+        }
+
+        function openNav() {
+            document.getElementById("mySidepanel").style.width = "250px";
+            document.getElementById("mainbodydiv").style.left = "270px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidepanel").style.width = "0";
+            document.getElementById("mainbodydiv").style.left = "20px";
+        }
+        function toggleNav() {
+            //debugger;
+            if (document.getElementById("mySidepanel").style.width === "" | document.getElementById("mySidepanel").style.width === "0px")
+                openNav()
+            else
+                closeNav()
+        }
+    </script>
+    <body style="background-color: #cecece;">
+        <table>
+            <tr>
+                <td>
+                    <button class="openbtn" onclick="toggleNav()" style=" z-index: 2; position: relative">&#9776;</button>
+                    <div id="mySidepanel" class="sidepanel">
+                        @(Html.Kendo().Menu()
+                      .Name("dmenu")
+                      .Orientation(MenuOrientation.Vertical)
+                      .Items(items =>
+                      {
+                          foreach (var Menu in Model)
+                          {
+                              items.Add()
+                              .Text(Menu.Text).HtmlAttributes(new { id = Menu.MenuName, style = "color:black;font-weight: normal;" }).Encoded(Menu.Encoded);
+                          }
+                      })
+                    )
+                    </div>
+                </td>
+                <td>
+                    <div id="mainbodydiv" class="partialpanel">
+
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </body>
+
+    <script>
+
+
+        $(document).ready(function () {
+            openNav();
+        });
+    </script>*@
+
+
+@{
+    Layout = null;
+}
+
+@{Html.RenderPartial("PartialSideMenu");}
+

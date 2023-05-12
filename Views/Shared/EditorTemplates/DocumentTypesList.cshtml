@@ -1,0 +1,53 @@
+﻿@model Guid?
+<table>
+    <tr>
+        <td style="width: 70%">
+
+            @(Html.Kendo().DropDownListFor(m => m)
+                .HtmlAttributes(new { id = "dropdownDocumentTypes", @class = "dropdownDocumentTypes" })
+                .DataValueField("DocumentTypeID")
+                .Filter("contains")
+                .DataTextField("DocumentTypeName")
+                .DataSource(ds => ds.Read(a => a.Action("GetDocumenttTypesList", "DocumentTypes"))
+                )
+                )
+
+        </td>
+        <td style="width: 30%">
+            <div id="document_type_add_button" class="k-button-icontext circleButton">
+                <a href="#">
+                    <span class="inner"></span>
+                    <i class='far fa-plus-square' style='font-size:18px'></i>
+                </a>
+            </div>
+        </td>
+    </tr>
+</table>
+<div id="adddocumenttypewindow"></div>
+<script>
+
+    var window = $("#adddocumenttypewindow").kendoWindow({
+        close: function(e) {
+            debugger;
+            var dropdownDocumentTypes = $("#dropdownDocumentTypes").data("kendoDropDownList");
+            dropdownDocumentTypes.dataSource.read();
+
+        },
+        height: "600px",
+        modal: true,
+        title: "Document types",
+        visible: false,
+        width: "800px"
+
+    }).data("kendoWindow");
+
+    $("#document_type_add_button").on("click", function () {
+        var dialog = $("#adddocumenttypewindow").data("kendoWindow");
+        dialog.refresh({
+            url: "../Directories/GetPartialView",
+            data: { directory: 'DocumentTypesPartial' }
+        });
+        dialog.center().open();
+    })
+</script>
+

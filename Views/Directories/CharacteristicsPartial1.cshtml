@@ -1,0 +1,221 @@
+﻿@using SAMS.Model
+
+@model List<CharacteristicCategoryClassModel>
+@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+
+    function charactericsDetailInit(e) {
+        debugger;
+        var detgridname = "#grid_" + e.data.CharacteristicCategoryID;
+        var list = $(detgridname).data("kendoGrid");
+        list.setDataSource(e.data.CharacteristicClasses);
+        //e.sender.dataSource.data(e.data.CharacteristicClasses)
+
+    }
+
+    function rategrid_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#CharacteristicCategoriesgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    //function editTermPrice(e) {
+    //    var gridname = "#grid_" + e;
+    //    var grid = $(gridname).getKendoGrid();
+    //    var selectedrow = grid.select()[0];
+    //    if (selectedrow) {
+    //        grid.editRow(selectedrow);
+    //    }
+    //}
+
+    //function deleteTermPrice(e) {
+    //    var gridname = "#grid_" + e;
+    //    var grid = $(gridname).getKendoGrid();
+    //    var selectedrow = grid.select()[0];
+    //    if (selectedrow) {
+    //        grid.removeRow(selectedrow);
+    //    }
+    //}
+
+    //function addTermPrice(e) {
+    //    var closestGridElement = e.sender.element.closest('[data-role="grid"]');
+    //    var id = closestGridElement.attr('id');
+    //}
+
+
+    function onCharecteristicsCategorygridDataBound(arg) {
+        //var docheight = $(document).height();
+        //$($("#ratePricesgrid").data("kendoGrid").scrollables[1]).css({ height: docheight * 0.7 + "px" })
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+
+
+
+    //function SetPricecharcat_edit(arg) {
+    //    if (arg === true) {
+    //        $("#charcat_edit_button").hide();
+    //        $("#charcat_delete_button").hide();
+    //        $("#charcat_pdf").hide();
+    //        $("#charcat_excel").hide();
+    //        $("#charcat_add_button").hide();
+    //        $("#charcat_cancel").show();
+    //        $("#charcat_update").show();
+    //    }
+    //    else {
+    //        $("#charcat_edit_button").show();
+    //        $("#charcat_delete_button").show();
+    //        $("#charcat_pdf").show();
+    //        $("#charcat_excel").show();
+    //        $("#charcat_add_button").show();
+    //        $("#charcat_cancel").hide();
+    //        $("#charcat_update").hide();
+    //    }
+    //}
+
+    //function onItemClick(e) {
+    //    var fab = $("#fab").getKendoFloatingActionButton();
+    //    for (var i = 0; i < fab.options.items.length; i++) {
+    //        fab.setOptions({
+    //            items: [{
+    //                label: 'Save',
+    //                icon: 'save',
+    //                click: function () { console.log('save action'); }
+    //            }, {
+    //                label: 'Print',
+    //                icon: 'print',
+    //                click: function () { console.log('print action'); }
+    //            }]
+    //        });
+    //    }
+    //};
+
+</script>
+
+
+<div>
+    @{
+        int characterisricsPermission = (int)ViewData["characterisricsPermission"];
+    }
+    @{Html.Kendo().Grid<CharacteristicCategoryClassModel>(Model)
+            .Name("CharacteristicCategoriesgrid")
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Columns(columns =>
+            {
+                columns.Bound(p => p.CharacteristicCategoryName).Width(100);
+                columns.Bound(p => p.Deactivate).ClientTemplate("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").Width(50);
+                columns.Bound(p => p.CreateDate).Format("{0:dd.MM.yyyy}").Width(100);
+                columns.Bound(p => p.ChangedByFullName).Width(100);
+                columns.Bound(p => p.ChangeDate).Format("{0:dd.MM.yyyy}").Width(100);//.Hidden(true);
+            })
+            .DetailTemplate(e =>
+            {
+                Html.Kendo().TabStrip()
+    .Name("TabStrip_" + e.CharacteristicCategoryID)
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+        items.Add().Text("Characteristics").Content(
+            @<text>
+                @(Html.Kendo().Grid(e.CharacteristicClasses)
+                .Name("grid_" + e.CharacteristicCategoryID)
+                .Columns(columns =>
+                {
+                    columns.Bound(p => p.CharacteristicName).Width(100);
+                    columns.Bound(p => p.Deactivate).Width(50);
+                    columns.Bound(p => p.CreatedDateStr).Width(100);
+                    columns.Bound(p => p.UserClass.Personnel.PersonnelFullName).Width(100);
+                    columns.Bound(p => p.ChangeDateStr).Width(100);
+                })
+                .Pageable()
+                .Sortable()  
+            )
+            </text>
+            );
+            })
+    .Render();
+    })
+  .RowAction(row =>
+  {
+      if (row.Index == 0)
+      {
+          row.DetailRow.Expanded = true;
+      }
+  })
+
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Template(@<text>
+    <div class="toolbar">
+        <button id="charcat_delete_button" class="k-button k-button-icontext k-grid-delete" type="button"></button>
+        <button id="charcat_edit_button" class="k-button k-button-icontext k-grid-edit" type="button"></button>
+        <button id="charcat_add_button" class='k-button k-button-icontext k-grid-add'>
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+
+        <button id="charcat_cancel" class="k-button k-button-icontext k-grid-cancel" type="button" style="display:none"></button>
+        <button id="charcat_update" class="k-button k-button-icontext k-grid-update" type="button" style="display:none"></button>
+
+    </div>
+                                        </text>);
+                                      })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Filterable()
+                .Scrollable(scr => scr.Height(600))
+                .DataSource(dataSource => dataSource.Server()
+.PageSize(5)
+.Model(model => model.Id(p => p.CharacteristicCategoryID))
+//.Create(update => update.Action("RateTermPrices_Create", "Rate", new { ratePriceGuid = "#=PriceRateGUID#" }))
+//.Update(update => update.Action("RateTermPrices_Update", "Rate"))
+//.Destroy(update => update.Action("RatesTermPrices_Destroy", "Rate"))
+)
+                .HtmlAttributes(new { style = "background:transparent; margin-left: 2%; margin-right: 2%" })
+
+          .Render();
+    }
+
+    @*<script id="characteristicstemplate" type="text/kendo-tmpl">
+                                <div>
+                                    @(Html.Kendo().Grid<CharacteristicClassModel>
+        ()
+        .Name("grid_#=CharacteristicCategoryID#") // template expression, to be evaluated in the master context
+        .Columns(columns =>
+        {
+            columns.Bound(p => p.CharacteristicName).Width(100);
+            columns.Bound(p => p.Deactivate).Width(50);
+            columns.Bound(p => p.CreatedDateStr).Width(100);
+            columns.Bound(p => p.UserClass.Personnel.PersonnelFullName).Width(100);
+            columns.Bound(p => p.ChangeDateStr).Width(100);
+        })
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .PageSize(5)
+        .Model(model => model.Id(p => p.CharacteristicID))
+        )
+        .ToClientTemplate())
+                                </div>
+            </script>*@
+</div>
+
+

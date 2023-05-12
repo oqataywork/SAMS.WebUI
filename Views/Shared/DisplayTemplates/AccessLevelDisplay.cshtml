@@ -1,0 +1,55 @@
+﻿@model System.Int32?
+
+@*<script id="tagTemplate" type="text/x-kendo-template">
+        # if (data.IsMainCustomer) { #
+             <span name='fullname#:data.CustomerID#'>#: data.FullName #</span> <span>Is Main Customer</span> <input name='myCheck#:data.CustomerID#' type='checkbox' id='myCheck#:data.CustomerID#' checked='true' onclick='MainCustomerClick(this)' style='width:200px ' />
+        # } else { #
+            <span name='fullname#:data.CustomerID#'>#: data.FullName #</span> <span>Is Main Customer</span><input name='myCheck#:data.CustomerID#' type='checkbox' id='myCheck#:data.CustomerID#'  onclick='MainCustomerClick(this)' style='width:200px '/>
+        # } #
+    </script>*@
+
+<script>
+    function AccLevel(arg) {
+        switch (arg) {
+            case 5:
+                return "Delete";
+            case 4:
+                return "Edit";
+            case 3:
+                return "Insert";
+            case 2:
+                return "Read";
+            case 3:
+                return "No Access";
+            default:
+                return "Not defined";
+        }
+    }
+</script>
+@if (Model == 5)
+{
+    <span>Delete</span>
+}
+@if (Model == 4)
+{
+    <span>Edit</span>
+}
+@if (Model == 3)
+{
+    <span>Insert</span>
+}
+@if (Model == 2)
+{
+    <span>Read only</span>
+}
+@if (Model == 1)
+{
+    <span>No access</span>
+}
+@if (Model == 0)
+{
+    <span>Not defined</span>
+}
+
+
+@*<span>"AccLevel(#=@Model#)"</span>*@

@@ -1,0 +1,201 @@
+﻿
+
+
+@using SAMS.Model
+
+
+@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/SamsStyles.css")" rel="stylesheet" type="text/css" />
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+<script type="text/javascript">
+
+
+    function charcatgrid_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            alert(message);
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function Setcharcat_edit(arg) {
+        if (arg === true) {
+            $("#charcat_edit_button").hide();
+            $("#charcat_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#charcat_add_button").hide();
+            $("#charcat_cancel").show();
+            $("#charcat_update").show();
+        }
+        else {
+            $("#charcat_edit_button").show();
+            $("#charcat_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#charcat_add_button").show();
+            $("#charcat_cancel").hide();
+            $("#charcat_update").hide();
+        }
+    }
+
+    function Addcharcat() {
+        grid = $("#grid").data("kendoGrid");
+        grid.addRow();
+        Setcharcat_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#charcat_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#grid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                Setcharcat_edit(true);
+            }
+        });
+
+        $("#charcat_add_button").on("click", function () {
+            Addcharcat();
+        })
+
+        $("#charcat_delete_button").on("click", function () {
+            grid = $("#grid").data("kendoGrid");
+            var sel = $("#grid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            Setcharcat_edit(false);
+        })
+
+        $("#charcat_update").on("click", function () {
+            debugger;
+            $("#grid").data("kendoGrid").saveChanges();
+            Setcharcat_edit(false);
+        })
+
+        $("#charcat_cancel").on("click", function () {
+            $("#grid").data("kendoGrid").cancelChanges();
+            Setcharcat_edit(false);
+        })
+        Setcharcat_edit(false);
+    });
+
+
+</script>
+
+<body style="background-color: #00B9CE; ">
+    <input type="hidden" name="cat_id" id="cat_id" />
+
+<div>
+        @{
+            int CharacteristicPermission = (int)ViewData["CharacteristicPermission"];
+        }
+
+        @(Html.Kendo().Grid<CharacteristicModel>()
+                        .Name("grid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                     <div id="charcat_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+
+                                                    <div id="charcat_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_update" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="charcat_cancel" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+
+
+				columns.Bound(p => p.CharacteristicName);
+				columns.Bound(p => p.CharacteristicCategory).ClientTemplate("#:CharacteristicCategoryName#").EditorTemplateName("CharacteristicsCategoriesList");
+				columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+				columns.Bound(p => p.CreateDate).Title("Created at").Format("{0:dd.MM.yyyy}");
+				columns.Bound(p => p.ChangeDate).Title("Changed at").Format("{0:dd.MM.yyyy}");
+				columns.Bound(p => p.ChangedByFullName);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Pageable(pager => pager.AlwaysVisible(true).PageSizes(new List<object> { 5, 10, 20, "all" }))
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .Read(ac => ac.Action("Characteristics_Read", "Characteristics"))
+                        .Create(ac => ac.Action("Characteristics_Create", "Characteristics"))
+                        .Update(ac => ac.Action("Characteristics_Update", "Characteristics"))
+                        .Destroy(ac => ac.Action("Characteristics_Destroy", "Characteristics"))
+                        .Model(model =>
+                        {
+
+				model.Id(p => p.CharacteristicID);
+				model.Field(p => p.CharacteristicName);
+				model.Field(p => p.CharacteristicCategoryID);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy).Editable(false);
+				model.Field(p => p.ChangedByFullName).Editable(false);
+				model.Field(p => p.CharacteristicCategoryName).Editable(false);
+                        })
+                        )
+                        )
+    </div>
+
+</body>
+

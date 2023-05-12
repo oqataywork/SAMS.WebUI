@@ -1,0 +1,148 @@
+﻿@using SAMS.Model;
+
+@model AssetTypeModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+<div>
+
+    @using (Html.BeginForm())
+    {
+        <fieldset>
+            <div hidden="hidden">
+                @Html.TextBoxFor(model => model.AssetTypeID, new { @id = "idinput" })
+            </div>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <div class="pane-content">
+                            <div class="img-container" style="width: 100%; height: 100%">
+                                <img id="uploadImage" class="img-thumbnail image" style="height: 250px;"/>
+                                <div class="middle">
+                                    @*<input type="button" id="btnUpload" class="btn btn-success" value="Загрузить" />
+                                        <input type="button" id="btnSave" class="btn btn-danger" style="visibility:hidden" value="Сохранить" />*@
+                                </div>
+                            </div>
+                            <input type="file" id="file" name="file" style="display:none" />
+                            <input type="hidden" id="fileContent" name="Photo" />
+                            <input type="hidden" id="fileType" name="FileType" />
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.AssetTypeName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.AssetTypeName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.SingleInstance)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.SingleInstance)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.Deactivate)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.CreateDate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.CreateDate)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ChangeDate)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.ChangeDate)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ChangedByFullName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.ChangedByFullName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.AssetCategoryName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.AssetCategoryName)
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="editor-label">
+                            @Html.LabelFor(model => model.ScheduleTypeName)
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor-field">
+                            @Html.DisplayFor(model => model.ScheduleTypeName)
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+        </fieldset>
+    }
+
+</div>

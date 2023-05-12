@@ -1,0 +1,125 @@
+﻿@using SAMS.Model;
+
+@model AssetTypeModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+<div>
+
+    @using (Html.BeginForm("AssetTypes_Create_or_Update", "AssetTypes", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+    <fieldset>
+        <div hidden="hidden">
+            @Html.TextBoxFor(model => model.AssetTypeID, new { @id = "idinput" })
+        </div>
+        <table>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.AssetTypeName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.AssetTypeName)
+                                    @Html.ValidationMessageFor(model => model.AssetTypeName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.AssetCategoryID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.AssetCategoryID)
+                                    @Html.ValidationMessageFor(model => model.AssetCategoryID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.ScheduleTypeID)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.ScheduleTypeID)
+                                    @Html.ValidationMessageFor(model => model.ScheduleTypeID)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.SingleInstance)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.SingleInstance)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Deactivate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Deactivate)
+                    </div>
+                </td>
+            </tr>
+
+</table>
+
+    </fieldset>
+            }
+
+    </div>

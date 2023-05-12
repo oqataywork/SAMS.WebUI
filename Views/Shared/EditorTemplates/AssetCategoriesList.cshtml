@@ -1,0 +1,14 @@
+﻿@model Guid?
+@*@(Html.Kendo().DropDownListFor(m => m)
+            .DataValueField("AssetCategoryID")
+            .DataTextField("AssetCategoryName")
+            .ValuePrimitive(true)
+            .BindTo((System.Collections.IEnumerable)ViewData["assetcategorieslist"])
+    )*@
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("AssetCategoryID")
+        .DataTextField("AssetCategoryName")
+        .Filter("contains")
+        .ValuePrimitive(true)
+        .BindTo((System.Collections.IEnumerable)ViewData["assetcategorieslist"])
+)

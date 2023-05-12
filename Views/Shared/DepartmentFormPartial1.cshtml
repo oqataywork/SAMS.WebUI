@@ -1,0 +1,125 @@
+﻿@using SAMS.Model;
+
+@model DepartmentModel
+
+<div id="editForm">
+
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true)
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DepartmentName)
+        </div>
+        <div class="editor-field">
+            <table>
+                <tr>
+                    <td>
+                        @Html.EditorFor(model => model.DepartmentName)
+                        @Html.ValidationMessageFor(model => model.DepartmentName)
+                    </td>
+                    <td><div style="color:red; margin: 3px">*</div></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Deactivate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Deactivate)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DepartmentChief)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.DepartmentChief)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DepartmentEmail)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.DepartmentEmail)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.DepartmentPhone)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.DepartmentPhone)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.LocationID)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.LocationID)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.OrganizationID)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.OrganizationID)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.ResponsiblePerson)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.ResponsiblePerson)
+        </div>
+    }
+
+</div>
+
+<style scoped>
+
+    #editForm {
+        width: 600px;
+        margin: 20px;
+        padding: 20px;
+        float: left;
+        border: 1px solid #c5c5c5;
+        border-radius: 10px;
+        font-size: 80%;
+    }
+
+        #editForm h2 {
+            border-bottom: 1px solid #ccc;
+            font-size: 1.4em;
+            font-weight: normal;
+            padding: 0;
+            margin: 0;
+        }
+
+        #editForm ul {
+            list-style-type: none;
+        }
+
+            #editForm ul li {
+                margin: 10px;
+            }
+
+            #editForm ul label {
+                font-weight: bold;
+                display: inline-block;
+                width: 90px;
+                text-align: right;
+            }
+
+        #editForm label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #editForm .buttons {
+            margin-top: 25px;
+        }
+
+        #editForm .k-button {
+            width: 100px;
+        }
+</style>

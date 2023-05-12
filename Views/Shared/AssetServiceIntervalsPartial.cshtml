@@ -1,0 +1,252 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetServiceIntervalgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetServiceIntervalgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetServiceIntervalgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetServiceIntervalgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetServiceIntervalgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetServiceIntervalID;
+          $("#AssetServiceIntervalID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetServiceIntervalID() {
+        var _selId = $("#AssetServiceIntervalID").val();
+        return {
+            assetserviceintervalid: _selId
+        };
+    }
+
+    function SetAssetServiceIntervalgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetServiceIntervalgrid_edit_button").hide();
+            $("#AssetServiceIntervalgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetServiceIntervalgrid_add_button").hide();
+            $("#AssetServiceIntervalgrid_cancel_button").show();
+            $("#AssetServiceIntervalgrid_update_button").show();
+        }
+        else {
+            $("#AssetServiceIntervalgrid_edit_button").show();
+            $("#AssetServiceIntervalgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetServiceIntervalgrid_add_button").show();
+            $("#AssetServiceIntervalgrid_cancel_button").hide();
+            $("#AssetServiceIntervalgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetServiceIntervalgridrow() {
+        $("#AssetServiceIntervalID").val('');
+        grid = $("#AssetServiceIntervalgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetServiceIntervalgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetServiceIntervalgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetServiceIntervalgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetServiceIntervalgrid_edit(true);
+            }
+        });
+
+        $("#AssetServiceIntervalgrid_add_button").on("click", function () {
+            AddAssetServiceIntervalgridrow();
+        });
+
+        $("#AssetServiceIntervalgrid_delete_button").on("click", function () {
+            grid = $("#AssetServiceIntervalgrid").data("kendoGrid");
+            var sel = $("#AssetServiceIntervalgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetServiceIntervalgrid_edit(false);
+        });
+
+        $("#AssetServiceIntervalgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetServiceIntervalgrid").data("kendoGrid").saveChanges();
+            SetAssetServiceIntervalgrid_edit(false);
+        });
+
+        $("#AssetServiceIntervalgrid_cancel_button").on("click", function () {
+            $("#AssetServiceIntervalgrid").data("kendoGrid").cancelChanges();
+            SetAssetServiceIntervalgrid_edit(false);
+        });
+        SetAssetServiceIntervalgrid_edit(false);
+
+        $("#AssetServiceIntervalgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetServiceIntervalID" id="AssetServiceIntervalID" />
+<div>
+        @{
+            int AssetServiceIntervalPermission = (int)ViewData["AssetServiceIntervalPermission"];
+        }
+        @(Html.Kendo().Grid<AssetServiceIntervalModel>()
+                        .Name("AssetServiceIntervalgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetServiceIntervalPermission >2){           
+                                                     <div id="AssetServiceIntervalgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetServiceIntervalPermission >3){
+                                                    <div id="AssetServiceIntervalgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetServiceIntervalPermission ==5){
+                                                    <div id="AssetServiceIntervalgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetServiceIntervalgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetServiceIntervalgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.AssetCategoryServiceIntervalID).ClientTemplate("#:MaintenanceRepairTypeShortName#");
+				                  columns.Bound(p => p.TotalValue);
+				                  columns.Bound(p => p.DeltaValue);
+                          columns.Bound(p => p.AssetServiceIntervalID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onAssetServiceIntervalgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetServiceIntervalgriderror_error")
+                            .RequestEnd("AssetServiceIntervalgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetServiceIntervalsMaps_ReadByID", "Assets").Data("FunAssetID"))
+                        .Create(ac => ac.Action("AssetServiceIntervals_New", "AssetServiceIntervals").Data("FunAssetID"))
+                        .Update(ac => ac.Action("AssetServiceIntervals_Update", "AssetServiceIntervals"))
+                        .Destroy(ac => ac.Action("AssetServiceIntervals_Destroy", "AssetServiceIntervals"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetServiceIntervalID); model.Field(p => p.AssetServiceIntervalID).Editable(false);
+				model.Field(p => p.AssetCategoryServiceIntervalID);
+				model.Field(p => p.AssetID);
+				model.Field(p => p.TotalValue);
+				model.Field(p => p.DeltaValue);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.MaintenanceRepairTypeShortName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetServiceIntervalgrid")
+    .Filter("td:nth-child(4)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

@@ -1,0 +1,114 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+
+<script type="text/javascript">
+    function griderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#grid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function gridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors == null) || (e.type == "update" && e.response.Errors == null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function UserID() {
+        var _selId = $("#UserID").val();
+        return {
+            UserID: _selId
+        };
+    }
+
+
+    $(document).ready(function () {
+
+
+    });
+
+
+</script>
+
+<script>
+    debugger;
+    var hub = $.connection.samsHub;
+    var hubStart = $.connection.hub.start();
+</script>
+
+<body>
+    <input type="hidden" name="UserID" id="UserID" />
+    <div>
+   
+        @(Html.Kendo().Notification()
+      .Name("notification")
+      .Width("100%")
+      .Position(position => position.Top(0).Left(0))
+)
+        @(Html.Kendo().Grid<UserModel>()
+    .Name("Grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.UserFullName).ClientTemplate(@"<div class='customer-photo' style='background-image: url(#:Image#);'></div><div class='customer-name'>#: UserFullName #</div>");
+        columns.Bound(p => p.UserFullName);
+        columns.Bound(p => p.UserLogin);
+        columns.Bound(c => c.IsOnline).ClientTemplate(@"<div style='background-color: #:OnLineColor#; color: white;'>#:IsOnline#</div>").Width(100);
+    })
+    .Scrollable()
+    .DataSource(dataSource => dataSource
+        .SignalR()
+        .AutoSync(true)
+        .Events(events => events.Push(@<text>
+            function(e) {
+                //var notification = $("#notification").data("kendoNotification");
+                //notification.success(e.type);
+            }
+        </text>))
+        .PageSize(10)
+        .Transport(tr => tr
+            .Promise("hubStart")
+            .Hub("hub")
+            .Client(c => c
+                .Read("read")
+                .Create("create")
+                .Update("update")
+                .Destroy("destroy"))
+            .Server(s => s
+                .Read("read")
+                .Create("create")
+                .Update("update")
+                .Destroy("destroy")))
+        .Schema(schema => schema
+            .Model(model =>
+            {
+                model.Id(m => m.UserID);
+                model.Field(m => m.UserFullName).Editable(false);
+                model.Field(m => m.UserLogin).Editable(false);
+                model.Field(m => m.IsOnline);
+            })
+        )
+    )
+)
+
+    </div>
+
+</body>
+

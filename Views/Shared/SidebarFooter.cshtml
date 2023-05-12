@@ -1,0 +1,23 @@
+﻿@{
+    Layout = null;
+}
+
+@Scripts.Render("~/Scripts/sidebar-footer.js")
+
+<div class="footer">
+
+</div>
+
+<div>
+    @(Html.Kendo().Window()
+        .Name("aboutWindow")
+        .Title("")
+        .Content("loading...")
+        .Iframe(false)
+        .Modal(true)
+        .LoadContentFrom("About", "Home")
+        .Actions(actions => actions.Close())
+        .Draggable(true)
+        .Visible(false)
+    )
+</div>

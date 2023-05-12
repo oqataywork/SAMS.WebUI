@@ -1,0 +1,251 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function CharacteristicCategorygriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#CharacteristicCategorygrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function CharacteristicCategorygridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#CharacteristicCategorygrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onCharacteristicCategorygridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.CharacteristicCategoryID;
+          $("#CharacteristicCategoryID").val(id);
+        }
+    }
+
+
+
+
+    function FunCharacteristicCategoryID() {
+        var _selId = $("#CharacteristicCategoryID").val();
+        return {
+            characteristiccategoryid: _selId
+        };
+    }
+
+    function SetCharacteristicCategorygrid_edit(arg) {
+        if (arg === true) {
+            $("#CharacteristicCategorygrid_edit_button").hide();
+            $("#CharacteristicCategorygrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#CharacteristicCategorygrid_add_button").hide();
+            $("#CharacteristicCategorygrid_cancel_button").show();
+            $("#CharacteristicCategorygrid_update_button").show();
+        }
+        else {
+            $("#CharacteristicCategorygrid_edit_button").show();
+            $("#CharacteristicCategorygrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#CharacteristicCategorygrid_add_button").show();
+            $("#CharacteristicCategorygrid_cancel_button").hide();
+            $("#CharacteristicCategorygrid_update_button").hide();
+        }
+    }
+
+    function AddCharacteristicCategorygridrow() {
+        $("#CharacteristicCategoryID").val('');
+        grid = $("#CharacteristicCategorygrid").data("kendoGrid");
+        grid.addRow();
+        SetCharacteristicCategorygrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#CharacteristicCategorygrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#CharacteristicCategorygrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetCharacteristicCategorygrid_edit(true);
+            }
+        });
+
+        $("#CharacteristicCategorygrid_add_button").on("click", function () {
+            AddCharacteristicCategorygridrow();
+        });
+
+        $("#CharacteristicCategorygrid_delete_button").on("click", function () {
+            grid = $("#CharacteristicCategorygrid").data("kendoGrid");
+            var sel = $("#CharacteristicCategorygrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetCharacteristicCategorygrid_edit(false);
+        });
+
+        $("#CharacteristicCategorygrid_update_button").on("click", function () {
+            debugger;
+            $("#CharacteristicCategorygrid").data("kendoGrid").saveChanges();
+            SetCharacteristicCategorygrid_edit(false);
+        });
+
+        $("#CharacteristicCategorygrid_cancel_button").on("click", function () {
+            $("#CharacteristicCategorygrid").data("kendoGrid").cancelChanges();
+            SetCharacteristicCategorygrid_edit(false);
+        });
+        SetCharacteristicCategorygrid_edit(false);
+
+        $("#CharacteristicCategorygrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="CharacteristicCategoryID" id="CharacteristicCategoryID" />
+<div>
+        @{
+            int CharacteristicCategoryPermission = (int)ViewData["CharacteristicCategoryPermission"];
+        }
+        @(Html.Kendo().Grid<CharacteristicCategoryModel>()
+                        .Name("CharacteristicCategorygrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (CharacteristicCategoryPermission >2){           
+                                                     <div id="CharacteristicCategorygrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (CharacteristicCategoryPermission >3){
+                                                    <div id="CharacteristicCategorygrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (CharacteristicCategoryPermission ==5){
+                                                    <div id="CharacteristicCategorygrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="CharacteristicCategorygrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="CharacteristicCategorygrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.CharacteristicCategoryName);
+				                  columns.Bound(p => p.Deactivate).ClientTemplate("<input disabled type= 'checkbox' #= Deactivate ? checked='checked' :'' # />").EditorTemplateName("<input type= 'checkbox' #= Deactivate ? checked='checked' :'' # />");
+				                  columns.Bound(p => p.CreateDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangeDate).Format("{0:dd.MM.yyyy}");
+				                  columns.Bound(p => p.ChangedByFullName);
+                          columns.Bound(p => p.CharacteristicCategoryID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onCharacteristicCategorygridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("CharacteristicCategorygriderror_error")
+                            .RequestEnd("CharacteristicCategorygridrequest_end")
+                        )
+                        .Read(ac => ac.Action("CharacteristicCategories_Read", "CharacteristicCategories"))
+                        .Create(ac => ac.Action("CharacteristicCategories_Create", "CharacteristicCategories"))
+                        .Update(ac => ac.Action("CharacteristicCategories_Update", "CharacteristicCategories"))
+                        .Destroy(ac => ac.Action("CharacteristicCategories_Destroy", "CharacteristicCategories"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.CharacteristicCategoryID); model.Field(p => p.CharacteristicCategoryID).Editable(false);
+				model.Field(p => p.CharacteristicCategoryName);
+				model.Field(p => p.Deactivate);
+				model.Field(p => p.CreateDate).Editable(false);
+				model.Field(p => p.ChangeDate).Editable(false);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName).Editable(false);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#CharacteristicCategorygrid")
+    .Filter("td:nth-child(6)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

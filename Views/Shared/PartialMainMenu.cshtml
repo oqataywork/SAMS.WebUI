@@ -1,0 +1,275 @@
+﻿@using SAMS.WebUI.Models
+
+@model List<MainMenu>
+
+<style>
+/*    .acc-wraper {
+        margin: 30px auto;
+        width: 70%;
+    }*/
+
+    .accordion {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: space-around;
+        overflow: hidden;
+        width: 100%;
+        height: 100px
+    }
+
+        .accordion > li {
+            width: 100px;
+            overflow: hidden;
+            transition: all .5s ease;
+            border: 5px solid aliceblue;
+            border-radius: 20px;
+            position: relative
+        }
+
+            .accordion > li:hover {
+                width: 300px;
+            }
+
+            .accordion > li div {
+                display: none;
+                position: absolute;
+                top: calc(50% - 10px);
+                left: 100px;
+            }
+
+            .accordion > li:hover div {
+                display: block;
+            }
+
+        .accordion li img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+
+<style>
+    .k-menu .k-state-selected > .k-link {
+        color: lightcoral;
+        background-color: #cecece;
+    }
+
+    .mmenu-fin {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_fin.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-telemetry {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_cloud.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-stock {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_barcode.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-repair {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_repair.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-orgchart {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_orgchart.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-directory {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_directory.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-reports {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_reports.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-admin {
+        display: flex;
+        align-items: flex-end;
+        /*justify-content: flex-end;*/
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_admin.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-bpm {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_bpm3.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-traffics {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_route.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+    .mmenu-metrorun {
+        width: 64px;
+        height: 64px;
+        /*display: inline-block;*/
+        display: flex;
+        align-items: flex-end;
+        border-radius: 50%;
+        background-image: url('../images/mainmenu/c_menu_routman.png');
+        margin-right: 0.5rem;
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+
+</style>
+@*@(Html.Kendo().ResponsivePanel().Name("menuPanel").Breakpoint(768).Content(@*@
+<div class="row">
+    @(Html.Kendo().Menu()
+  .Name("menu")
+  .SecurityTrimming(false)
+  .HtmlAttributes(new { @class = "accordion" })
+  .Items(items =>
+  {
+      //foreach (var Menu in Model)
+      //{
+      //    items.Add()
+      //    .Text(Menu.Text).HtmlAttributes(new { style = "color:black;font-weight: normal;" }).Action(Menu.Action, Menu.Controller).Encoded(Menu.Encoded);
+      //}
+      int _menuind = 0;
+      foreach (var Menu in Model)
+      {
+          //      if(_menuind==0)
+          //          items.Add()
+          //.HtmlAttributes(new { id = Menu.MenuName, style = "color:black;font-weight: normal; width: 264px" }).Text("<span class=\'" + Menu.Class + "'\"></span>" + Menu.Text).Encoded(Menu.Encoded);
+          //      else
+          items.Add()
+.HtmlAttributes(new { id = Menu.MenuName, style = "color:black;font-weight: normal;" }).Text("<span class=\'" + Menu.Class + "'\"><div>" + Menu.Text + "</div></span>").Encoded(Menu.Encoded);
+      }
+  })
+)
+</div>
+<script>
+    $("#menu").kendoMenu({
+        select: function (e) {
+            //debugger;
+            window.stop();
+            $(".k-state-selected", this.element).removeClass("k-state-selected");
+            $(e.item).addClass("k-state-selected");
+            openHref(e.item.id, 'Index');
+
+        }
+    });
+
+    function openHref(controller, action) {
+        
+        var jsUrl = '@Url.Action("aa", "cc")';
+        var repl1 = jsUrl.replace("aa", action);
+        var repl2 = repl1.replace("cc", controller);
+        //if (action === "GetReservationByGuid") {
+        //    $("#mainbodyarticle").load(repl2);
+        //}
+        //else {
+        $("#mainbodyarticle").toggle(1000, function () {
+            $("#mainbodyarticle").html('');
+                $("#mainbodyarticle").load(repl2, function () {
+                    $("#mainbodyarticle").toggle(1000, function () {
+                        //ff
+                    });
+                });
+            });
+
+        //}
+
+
+
+        //var boxWidth = $("#mainbodyarticle").width();
+        //$.get(repl2).done(function (result) {
+        //    $("#mainbodyarticle").toggle(1000, function () {
+        //        $("#mainbodyarticle").html(result);
+        //        $("#mainbodyarticle").toggle(1000, function () {
+        //            //ff
+        //        });
+        //    });
+
+        //});
+    }
+
+</script>

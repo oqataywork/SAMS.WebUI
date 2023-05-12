@@ -1,0 +1,107 @@
+﻿@using SAMS.Model;
+
+@model OrganizationModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+<div>
+
+    @using (Html.BeginForm("Organizations_Create_or_Update", "Organizations", FormMethod.Post, new { id = "modForm" }))
+    {
+        @Html.ValidationSummary(true)
+    <fieldset>
+        <div hidden="hidden">
+            @Html.TextBoxFor(model => model.OrganizationID, new { @id = "idinput" })
+        </div>
+        <table>
+
+            <tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationName)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        <table>
+                            <tr>
+                                <td>
+                                    @Html.EditorFor(model => model.OrganizationName)
+                                    @Html.ValidationMessageFor(model => model.OrganizationName)
+                                </td>
+                                <td><div style="color:red; margin: 3px">*</div></td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+				
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationEmail)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.OrganizationEmail)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationPhone)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.OrganizationPhone)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.OrganizationAddress)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.OrganizationAddress)
+                    </div>
+                </td>
+            </tr>
+				<tr>
+                <td>
+                    <div class="editor-label">
+                        @Html.LabelFor(model => model.Deactivate)
+                    </div>
+                </td>
+                <td>
+                    <div class="editor-field">
+                        @Html.EditorFor(model => model.Deactivate)
+                    </div>
+                </td>
+            </tr>
+
+</table>
+
+    </fieldset>
+            }
+
+    </div>

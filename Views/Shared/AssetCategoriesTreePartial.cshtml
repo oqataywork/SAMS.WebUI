@@ -1,0 +1,223 @@
+﻿@using SAMS.Core.ViewModels
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script src="~/Static/v1/Vendors/d3_mitch_tree/dist/js/d3-mitch-tree.min.js"></script>
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree.min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Static/v1/Vendors/d3_mitch_tree/dist/css/d3-mitch-tree-theme-default.min.css")" rel="stylesheet" type="text/css" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+
+    html,
+    body,
+    #tabstrip-parent,
+    #tabstrip {
+        height: 100%;
+        /*        width: 1100px;*/
+        min-width: 700px;
+        min-height: 800px;
+        top: 0;
+        margin: 0;
+        padding: 0;
+        border-width: 0;
+    }
+
+    #visualisation {
+        border: 1px black solid;
+    }
+
+    #divAssetCategoriesPartial {
+        height: 100%;
+    }
+</style>
+
+
+<script>
+    async function getData() {
+        debugger;
+        $.get("/AssetCategories/GetAssetCategoriesTree").success(function (data) {
+            try {
+                return data;
+            } catch (e) {
+                console.log(e);
+            }
+        })
+    }
+</script>
+
+
+
+<script type="text/javascript">
+
+    function CurrentID() {
+        var _selId = $("#cat_id").val();
+        return {
+            id: _selId
+        };
+    }
+
+    function openRight() {
+
+        document.getElementById("lefttd").style.width = "50%";
+        document.getElementById("righttd").style.width = "50%";
+        document.getElementById("righttd").style.display = "initial";
+    }
+
+    function closeRight() {
+        document.getElementById("lefttd").style.width = "100%";
+        document.getElementById("righttd").style.width = "0%";
+        document.getElementById("righttd").style.display = "none";
+    }
+
+    function toggleRight() {
+        debugger;
+        if (document.getElementById("righttd").style.width === "" | document.getElementById("righttd").style.width === "0px" | document.getElementById("righttd").style.width === "0%")
+            openRight()
+        else
+            closeRight()
+    }
+
+
+    $(document).ready(function () {
+        var treePlugin;
+        closeRight();
+
+
+        $(".k-grid-content").dblclick(function () {
+            toggleRight();
+        });
+
+        //var data = await  getData();
+
+        //getGithubOrgs("https://api.github.com/users/deekshasharma/orgs").then((res) =>
+
+        //    console.log(res)
+
+        //);
+
+        //getData().then((res) => {
+        //    data = res;
+        //});
+
+        var element = $("#divvisualisation");
+        kendo.ui.progress(element, true);
+
+        $.get("/AssetCategories/GetAssetCategoriesTree").success(function (data) {
+            try {
+                treePlugin = new d3.mitchTree.boxedTree()
+                    .setData(data)
+                    .setAllowZoom(false)
+                    .setElement(document.getElementById("visualisation"))
+                    .setIdAccessor(function (data) {
+                        return data.id;
+                    })
+                    .setChildrenAccessor(function (data) {
+                        return data.ChildrenAssetCategories;
+                    })
+                    .setBodyDisplayTextAccessor(function (data) {
+                        return data.AssetCategoryName;
+                    })
+                    .setTitleDisplayTextAccessor(function (data) {
+                        return data.AssetCategoryCode;
+                    })
+                    .on("nodeClick", function (event) {
+                        var id = event.nodeDataItem.data.AssetCategoryID;
+                        $("#cat_id").val(id);
+                        var assetCategoryAttributeMapgrid = $("#AssetCategoryAttributeMapgrid").getKendoGrid();
+                        if (assetCategoryAttributeMapgrid)
+                            assetCategoryAttributeMapgrid.dataSource.read();
+
+                        console.log('The event object:')
+                        console.log(event);
+                        console.log("Click event was triggered!");
+
+                        // Note for 'collapse' or 'expand' event type
+                        // to trigger, you'll need to disable focus mode.
+                        // You can do this by passing in false for the
+                        // allowFocus setting.
+                        if (event.type == 'focus')
+                            console.log("Node is being focused");
+                        else if (event.type == 'collapse')
+                            console.log("Node is collapsing");
+                        else if (event.type == 'expand')
+                            console.log("Node is expanding");
+                        // You use the below line to cancel the
+                        // focus/expand/collapse event
+                        //   event.preventDefault();
+                    })
+                    .initialize();
+                kendo.ui.progress(element, false);
+            } catch (e) {
+                console.log(e);
+            }
+        })
+        @*debugger;
+
+        var jsUrl = '@Url.Action("AssetCategoriesPartial", "AssetCategories")';
+
+        var element = $("#divAssetCategoriesPartial");
+        kendo.ui.progress(element, true);
+
+        $("#divAssetCategoriesPartial").html('');
+        $("#divAssetCategoriesPartial").load(jsUrl, function () {
+            kendo.ui.progress(element, false);
+        });*@
+
+    });
+
+</script>
+
+
+<body >
+    <input type="hidden" name="cat_id" id="cat_id" />
+
+    <table>
+        <tr>
+            <td id="lefttd">
+                <div id="tabstrip">
+                    <ul>
+                        <li class="k-active">
+                            Tree
+                        </li>
+                        <li>
+                            Table
+                        </li>
+
+                    </ul>
+                    <div id="divvisualisation">
+                        <section id="visualisation" />
+                    </div>
+                    <div id="divAssetCategoriesPartial" >
+                        @*@{Html.RenderPartial("AssetCategoriesPartial");}*@
+                        @Html.Partial("AssetCategoriesPartialView")
+                    </div>
+                </div>
+            </td>
+
+            <td id="righttd">
+
+                <div id="editForm">
+                    @*@{Html.RenderPartial("AssetCategoriesMapsPartial");}*@
+                    @Html.Partial("AssetCategoriesMapsPartial")
+                </div>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+
+
+<script>
+    $("#tabstrip").kendoTabStrip({
+        animation: {
+            open: {
+                effects: "fadeIn"
+            }
+        }
+    });
+</script>

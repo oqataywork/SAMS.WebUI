@@ -1,0 +1,108 @@
+﻿@using SAMS.Model;
+
+@model AssetModel
+
+<style>
+    .k-form-fieldset {
+        overflow-y: scroll;
+    }
+
+    .editor-label {
+        font-size: 12px;
+        margin: 10px;
+    }
+
+    .editor-field {
+        font-size: 16px;
+        margin: 10px;
+    }
+</style>
+
+
+
+<div id="tabstrip" style="min-width: 800px; min-height: 800px; top: 0; ">
+    <ul>
+        <li class="k-active">
+            Main
+        </li>
+        <li>
+            Attributes
+        </li>
+        <li>
+            Characteristics
+        </li>
+        <li>
+            Operational indicators
+        </li>
+        <li>
+            Service intervals
+        </li>
+        <li>
+            Documents
+        </li>
+        <li>
+            Assets Mapping
+        </li>
+
+    </ul>
+    <div>
+        @{Html.RenderPartial("AssetEditFormPartial_generated");}
+    </div>
+    <div>
+        @Html.Partial("AssetAttributeMapsPartial")
+    </div>
+    <div>
+        @Html.Partial("AssetCharacteristicsPartial")
+    </div>
+    <div>
+        @Html.Partial("AssetOperationIndicatorsMapsPartial")
+    </div>
+    <div>
+        @Html.Partial("AssetServiceIntervalsPartial")
+    </div>
+    <div>
+        @Html.Partial("AssetDocumentsPartialView")
+    </div>
+    <div>
+
+    </div>
+</div>
+
+<script>
+
+
+    function onSelect(e) {
+        debugger;
+        //kendoConsole.log("Selected: " + $(e.item).find("> .k-link").text());
+    }
+
+    function onShow(e) {
+        //kendoConsole.log("Shown: " + $(e.item).find("> .k-link").text());
+    }
+
+    function onActivate(e) {
+        //kendoConsole.log("Activated: " + $(e.item).find("> .k-link").text());
+    }
+
+    function onContentLoad(e) {
+        //kendoConsole.log("Content loaded in <b>"+ $(e.item).find("> .k-link").text() + "</b> and starts with <b>" + $(e.contentElement).text().substr(0, 20) + "...</b>");
+    }
+
+    function onError(e) {
+        //kendoConsole.error("Loading failed with " + e.xhr.statusText + " " + e.xhr.status);
+    }
+
+    $("#tabstrip").kendoTabStrip({
+        animation: {
+            open: {
+                effects: "fadeIn"
+            }
+        },
+        select: onSelect,
+        activate: onActivate,
+        show: onShow,
+        contentLoad: onContentLoad,
+        error: onError
+    });
+
+</script>

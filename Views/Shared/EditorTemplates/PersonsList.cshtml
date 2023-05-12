@@ -1,0 +1,14 @@
+﻿@model Guid?
+@*@(Html.Kendo().DropDownListFor(m => m)
+            .DataValueField("PersonnelID")
+            .DataTextField("PeronFullName")
+            .BindTo((System.Collections.IEnumerable)ViewData["personslist"])
+    )*@
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("PersonnelID")
+        .DataTextField("PeronFullName")
+        .OptionLabel("şəxsi seçin...")
+        .DataSource(ds => ds.Read(a => a.Action("PersonnelsByDepartment", "Directories").Data("FunDepartmentID"))
+)
+        )

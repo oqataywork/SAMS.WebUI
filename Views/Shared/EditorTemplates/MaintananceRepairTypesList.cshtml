@@ -1,0 +1,6 @@
+﻿@model Guid?
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataValueField("MaintenanceRepairTypeID")
+        .DataTextField("MaintenanceRepairTypeShortName")
+        .BindTo((System.Collections.IEnumerable)ViewData["maintanancerepairtypes_list"])
+)

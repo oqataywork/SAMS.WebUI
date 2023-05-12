@@ -1,0 +1,250 @@
+﻿@using Kendo.Mvc.UI;
+@using SAMS.Model;
+@{
+    Layout = "~/Views/Shared/_Layout_partial.cshtml";
+}
+
+<script type="text/javascript">
+    function AssetOperationIndicatorsMapgriderror_error(e) {
+        if (e.errors) {
+            var message = "There are some errors:\n";
+            // Create a message containing all errors.
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            // Display the message.
+            Swal.fire({ icon: 'error', text: message, showConfirmButton: true });
+            // Cancel the changes.
+            var grid = $("#AssetOperationIndicatorsMapgrid").data("kendoGrid");
+            grid.cancelChanges();
+        }
+    }
+
+    function AssetOperationIndicatorsMapgridrequest_end(e) {
+        if ((e.type === "create" && e.response.Errors === null) || (e.type === "update" && e.response.Errors === null))
+        {
+            Swal.fire({ icon: 'success', text: "Əməliyyat uğurla tamamlandı.", showConfirmButton: false, timer: 1500 });
+        }
+    }
+
+    function getgridTooltip(e) {
+        var dataItem = $("#AssetOperationIndicatorsMapgrid").data("kendoGrid").dataItem(e.target.closest("tr"));
+        var content = 'Created at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + ' Changed at: ' + kendo.toString(kendo.parseDate(dataItem.CreateDate), "dd.MM.yyyy HH:mm") + '<br/>Changed by:' + dataItem.ChangedByFullName;
+        return content;
+    }
+
+
+    function onAssetOperationIndicatorsMapgridChange(e) {
+        var dataItem = this.dataItem(this.select());
+        if(dataItem){
+          var id = dataItem.AssetOperationIndicatorID;
+          $("#AssetOperationIndicatorID").val(id);
+        }
+    }
+
+
+
+
+    function FunAssetOperationIndicatorID() {
+        var _selId = $("#AssetOperationIndicatorID").val();
+        return {
+            assetoperationindicatorid: _selId
+        };
+    }
+
+    function SetAssetOperationIndicatorsMapgrid_edit(arg) {
+        if (arg === true) {
+            $("#AssetOperationIndicatorsMapgrid_edit_button").hide();
+            $("#AssetOperationIndicatorsMapgrid_delete_button").hide();
+            $("#charcat_pdf").hide();
+            $("#charcat_excel").hide();
+            $("#AssetOperationIndicatorsMapgrid_add_button").hide();
+            $("#AssetOperationIndicatorsMapgrid_cancel_button").show();
+            $("#AssetOperationIndicatorsMapgrid_update_button").show();
+        }
+        else {
+            $("#AssetOperationIndicatorsMapgrid_edit_button").show();
+            $("#AssetOperationIndicatorsMapgrid_delete_button").show();
+            $("#charcat_pdf").show();
+            $("#charcat_excel").show();
+            $("#AssetOperationIndicatorsMapgrid_add_button").show();
+            $("#AssetOperationIndicatorsMapgrid_cancel_button").hide();
+            $("#AssetOperationIndicatorsMapgrid_update_button").hide();
+        }
+    }
+
+    function AddAssetOperationIndicatorsMapgridrow() {
+        $("#AssetOperationIndicatorID").val('');
+        grid = $("#AssetOperationIndicatorsMapgrid").data("kendoGrid");
+        grid.addRow();
+        SetAssetOperationIndicatorsMapgrid_edit(true);
+    }
+
+
+    $(document).ready(function () {
+
+
+        $("#AssetOperationIndicatorsMapgrid_edit_button").on("click", function (e) {
+            e.preventDefault();
+            var grid = $("#AssetOperationIndicatorsMapgrid").getKendoGrid();
+            var selectedrow = grid.select()[0];
+            if (selectedrow) {
+                grid.editRow(selectedrow);
+                SetAssetOperationIndicatorsMapgrid_edit(true);
+            }
+        });
+
+        $("#AssetOperationIndicatorsMapgrid_add_button").on("click", function () {
+            AddAssetOperationIndicatorsMapgridrow();
+        });
+
+        $("#AssetOperationIndicatorsMapgrid_delete_button").on("click", function () {
+            grid = $("#AssetOperationIndicatorsMapgrid").data("kendoGrid");
+            var sel = $("#AssetOperationIndicatorsMapgrid").data("kendoGrid").select();
+            grid.removeRow(sel);
+            SetAssetOperationIndicatorsMapgrid_edit(false);
+        });
+
+        $("#AssetOperationIndicatorsMapgrid_update_button").on("click", function () {
+            debugger;
+            $("#AssetOperationIndicatorsMapgrid").data("kendoGrid").saveChanges();
+            SetAssetOperationIndicatorsMapgrid_edit(false);
+        });
+
+        $("#AssetOperationIndicatorsMapgrid_cancel_button").on("click", function () {
+            $("#AssetOperationIndicatorsMapgrid").data("kendoGrid").cancelChanges();
+            SetAssetOperationIndicatorsMapgrid_edit(false);
+        });
+        SetAssetOperationIndicatorsMapgrid_edit(false);
+
+        $("#AssetOperationIndicatorsMapgrid").kendoTooltip({
+            filter: "th", // Select the th elements of the Grid.
+            position: "top",
+            width: 250,
+            content: function (e) {
+                // Return the text content of the hovered header.
+                return e.target.text();
+            }
+        }).data("kendoTooltip");
+    });
+
+
+</script>
+
+<body>
+    <input type="hidden" name="AssetOperationIndicatorID" id="AssetOperationIndicatorID" />
+<div>
+        @{
+            int AssetOperationIndicatorsMapPermission = (int)ViewData["AssetOperationIndicatorsMapPermission"];
+        }
+        @(Html.Kendo().Grid<AssetOperationIndicatorsMapModel>()
+                        .Name("AssetOperationIndicatorsMapgrid")
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(@<text>
+                                                <div class="toolbar">
+                                                    @if (AssetOperationIndicatorsMapPermission >2){           
+                                                     <div id="AssetOperationIndicatorsMapgrid_add_button" class="k-button-icontext k-grid-add circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-plus-square' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetOperationIndicatorsMapPermission >3){
+                                                    <div id="AssetOperationIndicatorsMapgrid_edit_button" class="k-button-icontext k-grid-edit circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-edit' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    @if (AssetOperationIndicatorsMapPermission ==5){
+                                                    <div id="AssetOperationIndicatorsMapgrid_delete_button" class="k-button-icontext k-grid-delete circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-trash-alt' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    }
+                                                    <div id="AssetOperationIndicatorsMapgrid_update_button" class="k-button-icontext k-grid-update circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-check-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                    <div id="AssetOperationIndicatorsMapgrid_cancel_button" class="k-button-icontext k-grid-cancel circleButton">
+                                                        <a href="#">
+                                                            <span class="inner"></span>
+                                                            <i class='far fa-times-circle' style='font-size:18px'></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </text>);
+                          })
+                        .Columns(columns =>
+                        {
+				                  columns.Bound(p => p.AssetCategoryOperationIndicatorID).ClientTemplate("#:OperationIndicatorName#");
+				                  columns.Bound(p => p.OperationIndicatorValue);
+                          columns.Bound(p => p.AssetOperationIndicatorID).ClientTemplate(@"<div class='columnicon' style='background-image: url(" + @Url.Content("~/Images/info.jpg") + ");'></div>").Title("Change Info").Width(50);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Groupable()
+                        .Resizable(resize => resize.Columns(true))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Navigatable()
+                        .Filterable()
+                        .Scrollable(scr => scr.Height(600))
+                        .Events(ev => ev
+                            .Change("onAssetOperationIndicatorsMapgridChange")
+                        )
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .ServerOperation(false)
+                        .Events(events => events
+                            .Error("AssetOperationIndicatorsMapgriderror_error")
+                            .RequestEnd("AssetOperationIndicatorsMapgridrequest_end")
+                        )
+                        .Read(ac => ac.Action("AssetOperationalIndicatorsMaps_ReadByID", "Assets").Data("FunAssetID"))
+                        .Create(ac => ac.Action("AssetOperationIndicatorsMaps_New", "AssetOperationIndicatorsMaps").Data("FunAssetID"))
+                        .Update(ac => ac.Action("AssetOperationIndicatorsMaps_Update", "AssetOperationIndicatorsMaps"))
+                        .Destroy(ac => ac.Action("AssetOperationIndicatorsMaps_Destroy", "AssetOperationIndicatorsMaps"))
+                        .Model(model =>
+                        {
+				model.Id(p => p.AssetOperationIndicatorID); model.Field(p => p.AssetOperationIndicatorID).Editable(false);
+				model.Field(p => p.AssetCategoryOperationIndicatorID);
+				model.Field(p => p.AssetID);
+				model.Field(p => p.OperationIndicatorValue);
+				model.Field(p => p.CreateDate);
+				model.Field(p => p.ChangeDate);
+				model.Field(p => p.ChangedBy);
+				model.Field(p => p.ChangedByFullName);
+				model.Field(p => p.OperationIndicatorName);
+                        })
+                        )
+                        )
+@(Html.Kendo().Tooltip()
+    .For("#AssetOperationIndicatorsMapgrid")
+    .Filter("td:nth-child(3)")
+    //.ContentTemplateId("tooltiptemplate")
+    .ContentHandler("getgridTooltip")
+    .Position(TooltipPosition.Top)
+    .Width(250)
+    .Height(100)
+)
+    </div>
+
+</body>
+

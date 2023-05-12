@@ -1,0 +1,20 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+@{
+    Layout = null;
+}
+@{
+    ViewBag.Title = "Error";
+}
+
+<div>
+    <p>
+        <b>Exception:</b> @Model.Exception.Message<br />
+        <b>Controller:</b> @Model.ControllerName<br />
+        <b>Action:</b> @Model.ActionName
+    </p>
+    <div style="overflow: scroll">
+        <pre>
+                    @Model.Exception.StackTrace
+                </pre>
+    </div>
+</div>
